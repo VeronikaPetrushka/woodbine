@@ -6,6 +6,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './src/screens/HomeScreen';
 import DreamsScreen from './src/screens/DreamsScreen';
 import DreamDetailsScreen from './src/screens/DreamDetailsScreen';
+import ProjectsScreen from './src/screens/ProjectsScreen';
+import ProjectDetailsScreen from './src/screens/ProjectDetailsScreen';
 
 enableScreens();
 
@@ -29,6 +31,16 @@ const App = () => {
                   <Stack.Screen 
                       name="DreamDetailsScreen" 
                       component={DreamDetailsScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="ProjectsScreen" 
+                      component={ProjectsScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="ProjectDetailsScreen" 
+                      component={ProjectDetailsScreen} 
                       options={{ headerShown: false }} 
                   />
               </Stack.Navigator>

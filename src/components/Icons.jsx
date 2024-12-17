@@ -41,6 +41,10 @@ const Icons = ({ type, active }) => {
     case 'delete':
         imageSource = require('../assets/icons/delete.png');
     break;
+    case 'edit':
+        imageSource = require('../assets/icons/edit.png');
+        iconStyle.push(styles.white);
+    break;
   }
 
   return (
@@ -68,6 +72,12 @@ const styles = StyleSheet.create({
     height: '100%',
     objectFit: 'cover',
     tintColor: '#8454ff',
+  },
+  white: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    tintColor: '#fff',
   }
 });
 

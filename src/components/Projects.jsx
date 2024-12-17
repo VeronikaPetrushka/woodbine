@@ -2,131 +2,212 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Calendar } from 'react-native-calendars';
 import Icons from './Icons';
 
 const { height, width } = Dimensions.get('screen');
 
-const Dreams = () => {
+const Projects = () => {
     const navigation = useNavigation(); 
     const [addPressed, setAddPressed] = useState(false);
     const [calendar, setCalendar] = useState(false);
-    const [wish, setWish] = useState('');
+    const [title, setTitle] = useState('');
+    const [style, setStyle] = useState('');
     const [desc, setDesc] = useState('');
-    const [date, setDate] = useState(null);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [selectingDate, setSelectingDate] = useState('start');
     const [budget, setBudget] = useState(null);
-    const [dreams, setDreams] = useState([]);
+    const [location, setLocation] = useState('');
+    const [category, setCategory] = useState('');
+    const [imageURI, setImageURI] = useState(null);
+    const [projects, setProjects] = useState([]);
     const [active, setActive] = useState('inprogress');
 
-    const [wishError, setWishError] = useState('');
+    const [titleError, setTitleError] = useState('');
+    const [styleError, setStyleError] = useState('');
     const [descError, setDescError] = useState('');
-    const [dateError, setDateError] = useState('');
+    const [startDateError, setStartDateError] = useState('');
+    const [endDateError, setEndDateError] = useState('');
     const [budgetError, setBudgetError] = useState('');
+    const [locationError, setLocationError] = useState('');
+    const [categoryError, setCategoryError] = useState('');
 
-    const loadDreams = useCallback(async () => {
+    const loadProjects = useCallback(async () => {
         try {
-            const savedDreams = await AsyncStorage.getItem('dreams');
-            if (savedDreams) {
-                setDreams(JSON.parse(savedDreams));
+            const savedProjects = await AsyncStorage.getItem('projects');
+            if (savedProjects) {
+                setProjects(JSON.parse(savedProjects));
             }
         } catch (error) {
-            console.error("Error loading dreams:", error);
+            console.error("Error loading projects:", error);
         }
     }, []);
 
     useEffect(() => {
-        loadDreams()
+        loadProjects()
     }, [!addPressed])
 
     useFocusEffect(
         useCallback(() => {
-            loadDreams();
-        }, [loadDreams])
+            loadProjects();
+        }, [loadProjects])
     );
 
-    const inProgressDreams = dreams.filter((dream) => dream.inprogress);
-    const doneDreams = dreams.filter((dream) => dream.done);
+    const inProgressProjects = projects.filter((project) => project.inprogress);
+    const doneProjects = projects.filter((project) => project.done);
 
-    const activeDreams = active === 'inprogress' ? inProgressDreams : doneDreams;
+    const activeProjects = active === 'inprogress' ? inProgressProjects : doneProjects;
 
     const handleDayPress = (day) => {
         const rawDate = new Date(day.dateString);
         const formattedDate = `${String(rawDate.getDate()).padStart(2, '0')}.${String(rawDate.getMonth() + 1).padStart(2, '0')}.${rawDate.getFullYear()}`;
-        setDate(formattedDate);
+    
+        if (selectingDate === 'start') {
+            setStartDate(formattedDate);
+        } else if (selectingDate === 'end') {
+            setEndDate(formattedDate);
+        }
+    
         setCalendar(false);
-        setDescError('');
+    }; 
+    
+    const handleImageUpload = () => {
+        launchImageLibrary(
+            { mediaType: 'photo', quality: 1 },
+            (response) => {
+                if (response.didCancel) {
+                    console.log('Image picker cancelled');
+                } else if (response.errorCode) {
+                    console.error('Image picker error: ', response.errorMessage);
+                } else {
+                    const uri = response.assets[0]?.uri;
+                    if (uri) setImageURI(uri);
+                }
+            }
+        );
     };    
 
-    const submitDream = async () => {
+    const submitProject = async () => {
         let valid = true;
 
-        setWishError('');
+        setTitleError('');
+        setStyleError('');
         setDescError('');
-        setDateError('');
+        setStartDateError('');
+        setEndDateError('');
         setBudgetError('');
+        setLocationError('');
+        setCategoryError('');
 
-        if (!wish) {
-            setWishError('Wish cannot be empty.');
+        if (!title) {
+            setTitleError('Title cannot be empty.');
             valid = false;
         }
+
+        if (!style) {
+            setStyleError('Style cannot be empty.');
+            valid = false;
+        }
+
         if (!desc) {
             setDescError('Description cannot be empty.');
             valid = false;
         }
-        if (!date) {
-            setDateError('Please select a date.');
+
+        if (!startDate) {
+            setStartDateError('Please select a start date.');
+            valid = false;
+        }
+        
+        if (!endDate) {
+            setEndDateError('Please select an end date.');
             valid = false;
         } else {
-            const selectedDate = new Date(date);
+            const start = new Date(startDate.split('.').reverse().join('-'));
+            const end = new Date(endDate.split('.').reverse().join('-'));
+        
+            if (start >= end) {
+                setStartDateError('Start date must be before end date.');
+                valid = false;
+            }
+        
             const today = new Date();
-            if (selectedDate <= today) {
-                setDateError('Please select a future date.');
+            if (end <= today) {
+                setEndDateError('End date must be in the future.');
                 valid = false;
             }
         }
+        
         if (!budget) {
             setBudgetError('Budget cannot be empty.');
             valid = false;
         }
 
-        if (!valid) return;
+        if (!location) {
+            setLocationError('Project location cannot be empty.');
+            valid = false;
+        }
 
-        const newDream = {
-            wish,
+        if (!category) {
+            setCategoryError('Project category cannot be empty.');
+            valid = false;
+        }
+
+        if (!valid) {
+            console.log("Form validation failed!");
+            return;
+        }        
+
+        const newProject = {
+            title,
+            style,
             desc,
-            date,
+            startDate,
+            endDate,
             budget,
+            location,
+            category,
+            imageURI,
             id: Date.now(),
             inprogress: true,
             done: false
         };
 
         try {
-            const existingDreams = await AsyncStorage.getItem('dreams');
-            const dreamsArray = existingDreams ? JSON.parse(existingDreams) : [];
-            dreamsArray.push(newDream);
+            const existingProjects = await AsyncStorage.getItem('projects');
+            const projectsArray = existingProjects ? JSON.parse(existingProjects) : [];
+            projectsArray.push(newProject);
 
-            await AsyncStorage.setItem('dreams', JSON.stringify(dreamsArray));
-            Alert.alert("Success", "Dream added successfully!");
+            await AsyncStorage.setItem('projects', JSON.stringify(projectsArray));
+            Alert.alert("Success", "Project added successfully!");
 
-            setWish('');
+            setTitle('');
+            setStyle('');
             setDesc('');
-            setDate(null);
+            setStartDate(null);
+            setEndDate(null);
             setBudget('');
+            setLocation('');
+            setCategory('');
+            setImageURI(null);
+
             setAddPressed(false);
+
         } catch (error) {
-            console.error("Error saving dream:", error);
-            Alert.alert("Error", "Failed to save dream. Please try again.");
+            console.error("Error saving project:", error);
+            Alert.alert("Error", "Failed to save project. Please try again.");
         }
     };
 
-    const handleDeleteDream = async (id) => {
-        const updatedDreams = dreams.filter((dream) => dream.id !== id);
-        setDreams(updatedDreams);
-        await AsyncStorage.setItem('dreams', JSON.stringify(updatedDreams));
-    };    
-
+    const handleDeleteProject = async (id) => {
+        const updatedProjects = projects.filter((project) => project.id !== id);
+        setProjects(updatedProjects);
+        await AsyncStorage.setItem('projects', JSON.stringify(updatedProjects));
+    };  
+    
     return (
         <View style={styles.container}>
 
@@ -134,7 +215,7 @@ const Dreams = () => {
                 <Icons type={'back'} />
             </TouchableOpacity>
 
-            <Text style={styles.title}>Garden Dreams</Text>
+            <Text style={styles.title}>Gardening projects</Text>
 
             {
                 addPressed ? (
@@ -142,37 +223,50 @@ const Dreams = () => {
                         <ScrollView style={{width: '100%'}}>
 
                             <TextInput
-                                value={wish}
-                                placeholder='Your wish'
+                                value={title}
+                                placeholder='Title'
                                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setWish(w)}
+                                onChangeText={(w) => setTitle(w)}
                                 style={styles.input}
                             />
-                            {wishError ? <Text style={styles.error}>{wishError}</Text> : null}
+                            {titleError ? <Text style={styles.error}>{titleError}</Text> : null}
 
                             <TextInput
-                                value={desc}
-                                placeholder='Description'
+                                value={style}
+                                placeholder='Style'
                                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(d) => setDesc(d)}
-                                multiline={true}
-                                style={[styles.input, {height: 100}]}
+                                onChangeText={(w) => setStyle(w)}
+                                style={styles.input}
                             />
-                            {descError ? <Text style={styles.error}>{descError}</Text> : null}
+                            {styleError ? <Text style={styles.error}>{styleError}</Text> : null}
 
                             <View style={{width: '100%'}}>
                                 <TextInput
-                                    value={date}
-                                    placeholder='Date'
+                                    value={startDate}
+                                    placeholder='Start date'
                                     placeholderTextColor="rgba(255, 255, 255, 0.5)"
                                     style={[styles.input, {paddingLeft: 44}]}
                                     editable={false}
                                 />
-                                <TouchableOpacity style={styles.calendarIcon} onPress={() => setCalendar(true)}>
+                                <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('start'); setCalendar(true); }}>
                                     <Icons type={'calendar'} />
                                 </TouchableOpacity>
                             </View>
-                            {dateError ? <Text style={styles.error}>{dateError}</Text> : null}
+                            {startDateError ? <Text style={styles.error}>{startDateError}</Text> : null}
+
+                            <View style={{width: '100%'}}>
+                                <TextInput
+                                    value={endDate}
+                                    placeholder='End date'
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    style={[styles.input, {paddingLeft: 44}]}
+                                    editable={false}
+                                />
+                                <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('end'); setCalendar(true); }}>
+                                    <Icons type={'calendar'} />
+                                </TouchableOpacity>
+                            </View>
+                            {endDateError ? <Text style={styles.error}>{endDateError}</Text> : null}
 
                             {
                                 calendar && (
@@ -180,7 +274,8 @@ const Dreams = () => {
                                         style={{ width: width * 0.89, borderRadius: 12, marginBottom: 10 }}
                                         onDayPress={handleDayPress}
                                         markedDates={{
-                                            [date]: { selected: true, selectedColor: '#ff0004' },
+                                            [startDate]: { selected: selectingDate === 'start', selectedColor: '#ff0004' },
+                                            [endDate]: { selected: selectingDate === 'end', selectedColor: '#ff0004' },
                                         }}
                                         theme={{
                                             selectedDayBackgroundColor: '#ff0004',
@@ -193,6 +288,16 @@ const Dreams = () => {
                                     />
                                 )
                             }
+
+                            <TextInput
+                                value={location}
+                                placeholder='Project location'
+                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                onChangeText={(w) => setLocation(w)}
+                                style={styles.input}
+                            />
+                            {locationError ? <Text style={styles.error}>{locationError}</Text> : null}
+
                             <TextInput
                                 value={budget ? `${budget} $` : ''}
                                 placeholder='Planned budget'
@@ -205,11 +310,41 @@ const Dreams = () => {
                             />
                             {budgetError ? <Text style={styles.error}>{budgetError}</Text> : null}
 
+                            <TextInput
+                                value={desc}
+                                placeholder='Description'
+                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                onChangeText={(d) => setDesc(d)}
+                                multiline={true}
+                                style={[styles.input, {height: 100}]}
+                            />
+                            {descError ? <Text style={styles.error}>{descError}</Text> : null}
+
+                            <TextInput
+                                value={category}
+                                placeholder='Project category'
+                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                onChangeText={(w) => setCategory(w)}
+                                style={styles.input}
+                            />
+                            {categoryError ? <Text style={styles.error}>{categoryError}</Text> : null}
+
+                            <Text style={styles.planText}>Garden plan</Text>
+
+                            <TouchableOpacity style={styles.imageUploadBtn} onPress={handleImageUpload}>
+                                {imageURI ? (
+                                    <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 12 }} />
+                                ) : (
+                                    <Image source={require('../assets/decor/image.png')} style={{width: 124, height: 124}} />
+                                )}
+                            </TouchableOpacity>
+
+
                             <View style={{height: 200}} />
                         </ScrollView>
                     </View>
                 ) : (
-                    dreams.length > 0 ? (
+                    projects.length > 0 ? (
                         <View style={{width: '100%'}}>
 
                             <View style={styles.stateBtnsContainer}>
@@ -224,25 +359,24 @@ const Dreams = () => {
 
                             <ScrollView style={{width: '100%'}}>
                                 <SwipeListView
-                                    data={activeDreams}
+                                    data={activeProjects}
                                     keyExtractor={(item) => item.id.toString()}
                                     renderItem={({ item }) => (
-                                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('DreamDetailsScreen', {dream: item})}>
-                                            <Text style={styles.wish}>{item.wish}</Text>
-                                            <Text style={styles.date}>{item.date}</Text>
+                                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ProjectDetailsScreen', {project: item})}>
+                                            <Text style={styles.cardTitle}>{item.title}</Text>
+                                            <Text style={styles.date}>{item.startDate} - {item.endDate}</Text>
+                                            <Text style={styles.date}>{item.location}</Text>
                                             <Text style={styles.description} numberOfLines={3} ellipsizeMode="tail">{item.desc}</Text>
-                                            <Text style={styles.budget}>{item.budget} $</Text>
                                         </TouchableOpacity>
                                     )}
                                     renderHiddenItem={({ item }) => (
-                                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteDream(item.id)}>
+                                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteProject(item.id)}>
                                             <Icons type={'delete'} />
                                         </TouchableOpacity>
                                     )}
                                     rightOpenValue={-80}
                                     disableRightSwipe={true}
                                 />
-
                                 <View style={{height: 170}} />
                             </ScrollView>
 
@@ -257,7 +391,16 @@ const Dreams = () => {
                 )
             }
 
-            <TouchableOpacity style={styles.addBtn} onPress={() => (addPressed ? submitDream() : setAddPressed(true))}>
+            <TouchableOpacity style={styles.addBtn} onPress={() => {
+                    if (addPressed) {
+                        console.log('Submitting project...');
+                        submitProject();
+                    } else {
+                        console.log('Add button pressed');
+                        setAddPressed(true);
+                    }
+                }}
+                >
                 <View style={styles.addIcon}>
                     <Icons type={'add'} />
                 </View>
@@ -413,7 +556,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20
     },
 
-    wish: {
+    cardTitle: {
         fontSize: 18,
         fontWeight: '900',
         color: '#fff',
@@ -453,8 +596,24 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: '50%',
         right: 20
+    },
+
+    planText: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#fff',
+        marginBottom: 8,
+    },
+
+    imageUploadBtn: {
+        width: '100%',
+        height: 248,
+        borderRadius: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#2b2b2b'
     }
 
 });
 
-export default Dreams;
+export default Projects;

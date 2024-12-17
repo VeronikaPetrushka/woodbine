@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
@@ -71,6 +71,37 @@ const DreamDetails = ({ dream }) => {
 
     };
 
+    const editDream = async () => {
+        validation();
+
+        const updatedDream = {
+            ...dream,
+            wish,
+            desc,
+            date,
+            budget,
+            inprogress: true,
+            done: false,
+        };
+    
+        try {
+            const existingDreams = await AsyncStorage.getItem('dreams');
+            let dreamsArray = existingDreams ? JSON.parse(existingDreams) : [];
+    
+            dreamsArray = dreamsArray.map((item) => 
+                item.id === dream.id ? updatedDream : item
+            );
+    
+            await AsyncStorage.setItem('dreams', JSON.stringify(dreamsArray));
+            Alert.alert("Success", "Dream updated successfully!");
+    
+            navigation.goBack();
+        } catch (error) {
+            console.error("Error updating dream:", error);
+            Alert.alert("Error", "Failed to update dream. Please try again.");
+        }
+    };
+
     const submitDream = async () => {
         validation();
 
@@ -108,7 +139,7 @@ const DreamDetails = ({ dream }) => {
                 <Icons type={'back'} />
             </TouchableOpacity>
 
-            <Text style={styles.title}>Garden Dreams</Text>
+            <Text style={styles.title}>Garden Dream</Text>
 
             <ScrollView style={{width: '100%'}}>
 
@@ -178,6 +209,13 @@ const DreamDetails = ({ dream }) => {
 
                 <View style={{height: 200}} />
             </ScrollView>
+
+            <TouchableOpacity style={[styles.doneBtn, {backgroundColor: '#0080ff', bottom: height * 0.15}, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editDream}>
+                <View style={[styles.doneIcon, {marginRight: 6}]}>
+                    <Icons type={'edit'} />
+                </View>
+                <Text style={styles.doneBtnText}>Edit</Text>
+            </TouchableOpacity>
 
             <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={submitDream}>
                 <View style={styles.doneIcon}>
