@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native'
 import { Calendar } from 'react-native-calendars';
 import Icons from './Icons';
 
@@ -15,17 +15,47 @@ const Dreams = () => {
     const [desc, setDesc] = useState('');
     const [date, setDate] = useState(null);
     const [budget, setBudget] = useState(null);
+    const [dreams, setDreams] = useState([]);
+    const [active, setActive] = useState('inprogress');
 
     const [wishError, setWishError] = useState('');
     const [descError, setDescError] = useState('');
     const [dateError, setDateError] = useState('');
     const [budgetError, setBudgetError] = useState('');
 
+    const loadDreams = useCallback(async () => {
+        try {
+            const savedDreams = await AsyncStorage.getItem('dreams');
+            if (savedDreams) {
+                setDreams(JSON.parse(savedDreams));
+            }
+        } catch (error) {
+            console.error("Error loading dreams:", error);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadDreams()
+    }, [!addPressed])
+
+    useFocusEffect(
+        useCallback(() => {
+            loadDreams();
+        }, [loadDreams])
+    );
+
+    const inProgressDreams = dreams.filter((dream) => dream.inprogress);
+    const doneDreams = dreams.filter((dream) => dream.done);
+
+    const activeDreams = active === 'inprogress' ? inProgressDreams : doneDreams;
+
     const handleDayPress = (day) => {
-        setDate(day.dateString);
+        const rawDate = new Date(day.dateString);
+        const formattedDate = `${String(rawDate.getDate()).padStart(2, '0')}.${String(rawDate.getMonth() + 1).padStart(2, '0')}.${rawDate.getFullYear()}`;
+        setDate(formattedDate);
         setCalendar(false);
         setDescError('');
-    };
+    };    
 
     const submitDream = async () => {
         let valid = true;
@@ -67,6 +97,8 @@ const Dreams = () => {
             date,
             budget,
             id: Date.now(),
+            inprogress: true,
+            done: false
         };
 
         try {
@@ -155,10 +187,13 @@ const Dreams = () => {
                                 )
                             }
                             <TextInput
-                                value={budget}
+                                value={budget ? `${budget} $` : ''}
                                 placeholder='Planned budget'
                                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(b) => setBudget(b)}
+                                onChangeText={(b) => {
+                                    const numericValue = b.replace(/[^0-9]/g, '');
+                                    setBudget(numericValue);
+                                }}
                                 style={styles.input}
                             />
                             {budgetError ? <Text style={styles.error}>{budgetError}</Text> : null}
@@ -167,11 +202,41 @@ const Dreams = () => {
                         </ScrollView>
                     </View>
                 ) : (
-                    <View style={styles.noContainer}>
-                        <Image style={styles.image} source={require('../assets/decor/dreams.png')} />
-                        <Text style={styles.noTitle}>Nothing added yet</Text>
-                        <Text style={styles.noText}>Click on the button below to add a dream garden</Text>
-                    </View>    
+                    dreams.length > 0 ? (
+                        <View style={{width: '100%'}}>
+
+                            <View style={styles.stateBtnsContainer}>
+                                <TouchableOpacity style={[styles.stateBtn, {marginRight: 15}, active === 'inprogress' && {backgroundColor: '#ed2124'}]} onPress={() => setActive('inprogress')}>
+                                    <Text style={[styles.stateBtnText, active === 'done' && {opacity: 0.5}]}>In progress</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={[styles.stateBtn, active === 'done' && {backgroundColor: '#ed2124'}]} onPress={() => setActive('done')}>
+                                    <Text style={[styles.stateBtnText, active === 'inprogress' && {opacity: 0.5}]}>Finished</Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <ScrollView style={{width: '100%'}}>
+                                {
+                                    activeDreams.map((dream, index) => (
+                                        <TouchableOpacity key={index} style={styles.card} onPress={() => navigation.navigate('DreamDetailsScreen', {dream: dream})}>
+                                            <Text style={styles.wish}>{dream.wish}</Text>
+                                            <Text style={styles.date}>{dream.date}</Text>
+                                            <Text style={styles.description} numberOfLines={3} ellipsizeMode='tail'>{dream.desc}</Text>
+                                            <Text style={styles.budget}>{dream.budget} $</Text>
+                                        </TouchableOpacity>
+                                    ))
+                                }
+                                <View style={{height: 170}} />
+                            </ScrollView>
+
+                        </View>
+                    ) : (
+                        <View style={styles.noContainer}>
+                            <Image style={styles.image} source={require('../assets/decor/dreams.png')} />
+                            <Text style={styles.noTitle}>Nothing added yet</Text>
+                            <Text style={styles.noText}>Click on the button below to add a dream garden</Text>
+                        </View>    
+                    )
                 )
             }
 
@@ -295,6 +360,74 @@ const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '500',
         marginBottom: 10,
+    },
+
+    stateBtnsContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10
+    },
+
+    stateBtn: {
+        width: 128,
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 72,
+        backgroundColor: '#2b2b2b'
+    },
+
+    stateBtnText: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#fff'
+    },
+
+    card: {
+        with: '100%',
+        height: 160,
+        alignItems: 'flex-start',
+        backgroundColor: '#2b2b2b',
+        borderRadius: 12,
+        marginBottom: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 20
+    },
+
+    wish: {
+        fontSize: 18,
+        fontWeight: '900',
+        color: '#fff',
+        marginBottom: 8,
+        lineHeight: 22 
+    },
+
+    date: {
+        fontSize: 12,
+        fontWeight: '400',
+        color: '#fff',
+        marginBottom: 8,
+        lineHeight: 14.63
+    },
+
+    description: {
+        fontSize: 12,
+        fontWeight: '400',
+        color: '#fff',
+        opacity: 0.5,
+        marginBottom: 8,
+        lineHeight: 14.63,
+        overflow: 'hidden',
+        height: 45
+    },
+
+    budget: {
+        fontSize: 25,
+        fontWeight: '900',
+        color: '#ed2124',
+        lineHeight: 30.48
     }
 
 });

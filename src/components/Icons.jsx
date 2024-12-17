@@ -35,6 +35,9 @@ const Icons = ({ type, active }) => {
     case 'calendar':
         imageSource = require('../assets/icons/calendar.png');
     break;
+    case 'done':
+        imageSource = require('../assets/icons/done.png');
+    break;
   }
 
   return (
