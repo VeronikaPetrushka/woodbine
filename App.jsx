@@ -8,6 +8,9 @@ import DreamsScreen from './src/screens/DreamsScreen';
 import DreamDetailsScreen from './src/screens/DreamDetailsScreen';
 import ProjectsScreen from './src/screens/ProjectsScreen';
 import ProjectDetailsScreen from './src/screens/ProjectDetailsScreen';
+import DesiresScreen from './src/screens/DesiresScreen';
+import DesireDetailsScreen from './src/screens/DesireDetailsScreen';
+import PlantsScreen from './src/screens/PlantsScreen';
 
 enableScreens();
 
@@ -41,6 +44,21 @@ const App = () => {
                   <Stack.Screen 
                       name="ProjectDetailsScreen" 
                       component={ProjectDetailsScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="DesiresScreen" 
+                      component={DesiresScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="DesireDetailsScreen" 
+                      component={DesireDetailsScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="PlantsScreen" 
+                      component={PlantsScreen} 
                       options={{ headerShown: false }} 
                   />
               </Stack.Navigator>

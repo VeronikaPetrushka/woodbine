@@ -1,35 +1,25 @@
 import React, { useState } from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native'
 import { Calendar } from 'react-native-calendars';
 import Icons from './Icons';
 
 const { height, width } = Dimensions.get('screen');
 
-const ProjectDetails = ({ project }) => {
+const DesireDetails = ({ desire }) => {
     const navigation = useNavigation(); 
     const [calendar, setCalendar] = useState(false);
-    const [title, setTitle] = useState(project.title);
-    const [style, setStyle] = useState(project.style);
-    const [desc, setDesc] = useState(project.desc);
-    const [startDate, setStartDate] = useState(project.startDate);
-    const [endDate, setEndDate] = useState(project.endDate);
+    const [title, setTitle] = useState(desire.title);
+    const [desc, setDesc] = useState(desire.desc);
+    const [startDate, setStartDate] = useState(desire.startDate);
+    const [endDate, setEndDate] = useState(desire.endDate);
     const [selectingDate, setSelectingDate] = useState('start');
-    const [budget, setBudget] = useState(project.budget);
-    const [location, setLocation] = useState(project.location);
-    const [category, setCategory] = useState(project.category);
-    const [imageURI, setImageURI] = useState(project.imageURI);
 
     const [titleError, setTitleError] = useState('');
-    const [styleError, setStyleError] = useState('');
     const [descError, setDescError] = useState('');
     const [startDateError, setStartDateError] = useState('');
     const [endDateError, setEndDateError] = useState('');
-    const [budgetError, setBudgetError] = useState('');
-    const [locationError, setLocationError] = useState('');
-    const [categoryError, setCategoryError] = useState('');
     const [isValid, setIsValid] = useState(true);
 
     const handleDayPress = (day) => {
@@ -43,43 +33,18 @@ const ProjectDetails = ({ project }) => {
         }
     
         setCalendar(false);
-    }; 
-
-    const handleImageUpload = () => {
-        launchImageLibrary(
-            { mediaType: 'photo', quality: 1 },
-            (response) => {
-                if (response.didCancel) {
-                    console.log('Image picker cancelled');
-                } else if (response.errorCode) {
-                    console.error('Image picker error: ', response.errorMessage);
-                } else {
-                    const uri = response.assets[0]?.uri;
-                    if (uri) setImageURI(uri);
-                }
-            }
-        );
     };    
 
     const validation = () => {
         let valid = true;
 
         setTitleError('');
-        setStyleError('');
         setDescError('');
         setStartDateError('');
         setEndDateError('');
-        setBudgetError('');
-        setLocationError('');
-        setCategoryError('');
 
         if (!title) {
             setTitleError('Title cannot be empty.');
-            valid = false;
-        }
-
-        if (!style) {
-            setStyleError('Style cannot be empty.');
             valid = false;
         }
 
@@ -111,21 +76,6 @@ const ProjectDetails = ({ project }) => {
                 valid = false;
             }
         }
-        
-        if (!budget) {
-            setBudgetError('Budget cannot be empty.');
-            valid = false;
-        }
-
-        if (!location) {
-            setLocationError('Project location cannot be empty.');
-            valid = false;
-        }
-
-        if (!category) {
-            setCategoryError('Project category cannot be empty.');
-            valid = false;
-        }
 
         if(valid) {
             setIsValid(true);
@@ -137,75 +87,65 @@ const ProjectDetails = ({ project }) => {
 
     };
 
-    const editProject = async () => {
+    const editDesire = async () => {
         validation();
 
-        const updatedProject = {
-            ...project,
+        const updatedDesire = {
+            ...desire,
             title,
-            style,
             desc,
             startDate,
             endDate,
-            budget,
-            location,
-            category,
-            imageURI,
             inprogress: true,
             done: false
         };
     
         try {
-            const existingProjects = await AsyncStorage.getItem('projects');
-            const projectsArray = existingProjects ? JSON.parse(existingProjects) : [];
+            const existingDesires = await AsyncStorage.getItem('desires');
+            const desiresArray = existingDesires ? JSON.parse(existingDesires) : [];
     
-            const updatedProjectsArray = projectsArray.map((item) => 
-                item.id === project.id ? updatedProject : item
+            const updatedDesiresArray = desiresArray.map((item) => 
+                item.id === desire.id ? updatedDesire : item
             );
     
-            await AsyncStorage.setItem('projects', JSON.stringify(updatedProjectsArray));
-            Alert.alert("Success", "Project updated successfully!");
+            await AsyncStorage.setItem('desires', JSON.stringify(updatedDesiresArray));
+            Alert.alert("Success", "desire updated successfully!");
     
             navigation.goBack();
         } catch (error) {
-            console.error("Error updating project:", error);
-            Alert.alert("Error", "Failed to update project. Please try again.");
+            console.error("Error updating desire:", error);
+            Alert.alert("Error", "Failed to update desire. Please try again.");
         }
     };
 
-    const submitProject = async () => {
+    const submitDesire = async () => {
         validation();
 
-        const updatedProject = {
-            ...project,
+        const updatedDesire = {
+            ...desire,
             title,
-            style,
             desc,
             startDate,
             endDate,
-            budget,
-            location,
-            category,
-            imageURI,
             inprogress: false,
             done: true
         };
     
         try {
-            const existingProjects = await AsyncStorage.getItem('projects');
-            const projectsArray = existingProjects ? JSON.parse(existingProjects) : [];
+            const existingDesires = await AsyncStorage.getItem('desires');
+            const desiresArray = existingDesires ? JSON.parse(existingDesires) : [];
     
-            const updatedProjectsArray = projectsArray.map((item) => 
-                item.id === project.id ? updatedProject : item
+            const updatedDesiresArray = desiresArray.map((item) => 
+                item.id === desire.id ? updatedDesire : item
             );
     
-            await AsyncStorage.setItem('projects', JSON.stringify(updatedProjectsArray));
-            Alert.alert("Success", "Project updated and moved to finished successfully!");
+            await AsyncStorage.setItem('desires', JSON.stringify(updatedDesiresArray));
+            Alert.alert("Success", "desire updated and moved to finished successfully!");
     
             navigation.goBack();
         } catch (error) {
-            console.error("Error updating project:", error);
-            Alert.alert("Error", "Failed to update project. Please try again.");
+            console.error("Error updating desire:", error);
+            Alert.alert("Error", "Failed to update desire. Please try again.");
         }
     };
     
@@ -215,7 +155,7 @@ const ProjectDetails = ({ project }) => {
                 <Icons type={'back'} />
             </TouchableOpacity>
 
-            <Text style={styles.title}>Garden Project</Text>
+            <Text style={styles.title}>Green desire</Text>
 
             <ScrollView style={{width: '100%'}}>
 
@@ -229,13 +169,14 @@ const ProjectDetails = ({ project }) => {
                 {titleError ? <Text style={styles.error}>{titleError}</Text> : null}
 
                 <TextInput
-                    value={style}
-                    placeholder='Style'
+                    value={desc}
+                    placeholder='Description'
                     placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(w) => setStyle(w)}
-                    style={styles.input}
+                    onChangeText={(d) => setDesc(d)}
+                    multiline={true}
+                    style={[styles.input, {height: 100}]}
                 />
-                {styleError ? <Text style={styles.error}>{styleError}</Text> : null}
+                {descError ? <Text style={styles.error}>{descError}</Text> : null}
 
                 <View style={{width: '100%'}}>
                     <TextInput
@@ -286,69 +227,18 @@ const ProjectDetails = ({ project }) => {
                     )
                 }
 
-                <TextInput
-                    value={location}
-                    placeholder='Project location'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(w) => setLocation(w)}
-                    style={styles.input}
-                />
-                {locationError ? <Text style={styles.error}>{locationError}</Text> : null}
-
-                <TextInput
-                    value={budget ? `${budget} $` : ''}
-                    placeholder='Planned budget'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(b) => {
-                        const numericValue = b.replace(/[^0-9]/g, '');
-                        setBudget(numericValue);
-                    }}
-                    style={styles.input}
-                />
-                {budgetError ? <Text style={styles.error}>{budgetError}</Text> : null}
-
-                <TextInput
-                    value={desc}
-                    placeholder='Description'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(d) => setDesc(d)}
-                    multiline={true}
-                    style={[styles.input, {height: 100}]}
-                />
-                {descError ? <Text style={styles.error}>{descError}</Text> : null}
-
-                <TextInput
-                    value={category}
-                    placeholder='Project category'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(w) => setCategory(w)}
-                    style={styles.input}
-                />
-                {categoryError ? <Text style={styles.error}>{categoryError}</Text> : null}
-
-                <Text style={styles.planText}>Garden plan</Text>
-
-                <TouchableOpacity style={styles.imageUploadBtn} onPress={handleImageUpload}>
-                    {imageURI ? (
-                        <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 12 }} />
-                    ) : (
-                        <Image source={require('../assets/decor/image.png')} style={{width: 124, height: 124}} />
-                    )}
-                </TouchableOpacity>
-
-
                 <View style={{height: 200}} />
 
             </ScrollView>
 
-            <TouchableOpacity style={[styles.doneBtn, {backgroundColor: '#0080ff', bottom: height * 0.15}, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editProject}>
+            <TouchableOpacity style={[styles.doneBtn, {backgroundColor: '#0080ff', bottom: height * 0.15}, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editDesire}>
                 <View style={[styles.doneIcon, {marginRight: 6}]}>
                     <Icons type={'edit'} />
                 </View>
                 <Text style={styles.doneBtnText}>Edit</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={submitProject}>
+            <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={submitDesire}>
                 <View style={styles.doneIcon}>
                     <Icons type={'done'} />
                 </View>
@@ -438,22 +328,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
 
-    planText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#fff',
-        marginBottom: 8,
-    },
-
-    imageUploadBtn: {
-        width: '100%',
-        height: 248,
-        borderRadius: 16,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#2b2b2b'
-    }
-
 });
 
-export default ProjectDetails;
+export default DesireDetails;

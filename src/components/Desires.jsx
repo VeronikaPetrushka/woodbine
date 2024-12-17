@@ -9,57 +9,48 @@ import Icons from './Icons';
 
 const { height, width } = Dimensions.get('screen');
 
-const Projects = () => {
+const Desires = () => {
     const navigation = useNavigation(); 
     const [addPressed, setAddPressed] = useState(false);
     const [calendar, setCalendar] = useState(false);
     const [title, setTitle] = useState('');
-    const [style, setStyle] = useState('');
     const [desc, setDesc] = useState('');
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [selectingDate, setSelectingDate] = useState('start');
-    const [budget, setBudget] = useState(null);
-    const [location, setLocation] = useState('');
-    const [category, setCategory] = useState('');
-    const [imageURI, setImageURI] = useState(null);
-    const [projects, setProjects] = useState([]);
+    const [desires, setDesires] = useState([]);
     const [active, setActive] = useState('inprogress');
 
     const [titleError, setTitleError] = useState('');
-    const [styleError, setStyleError] = useState('');
     const [descError, setDescError] = useState('');
     const [startDateError, setStartDateError] = useState('');
     const [endDateError, setEndDateError] = useState('');
-    const [budgetError, setBudgetError] = useState('');
-    const [locationError, setLocationError] = useState('');
-    const [categoryError, setCategoryError] = useState('');
 
-    const loadProjects = useCallback(async () => {
+    const loadDesires = useCallback(async () => {
         try {
-            const savedProjects = await AsyncStorage.getItem('projects');
-            if (savedProjects) {
-                setProjects(JSON.parse(savedProjects));
+            const savedDesires = await AsyncStorage.getItem('desires');
+            if (savedDesires) {
+                setDesires(JSON.parse(savedDesires));
             }
         } catch (error) {
-            console.error("Error loading projects:", error);
+            console.error("Error loading desires:", error);
         }
     }, []);
 
     useEffect(() => {
-        loadProjects()
+        loadDesires()
     }, [!addPressed])
 
     useFocusEffect(
         useCallback(() => {
-            loadProjects();
-        }, [loadProjects])
+            loadDesires();
+        }, [loadDesires])
     );
 
-    const inProgressProjects = projects.filter((project) => project.inprogress);
-    const doneProjects = projects.filter((project) => project.done);
+    const inProgressDesires = desires.filter((desire) => desire.inprogress);
+    const doneDesired = desires.filter((desire) => desire.done);
 
-    const activeProjects = active === 'inprogress' ? inProgressProjects : doneProjects;
+    const activeDesires = active === 'inprogress' ? inProgressDesires : doneDesired;
 
     const handleDayPress = (day) => {
         const rawDate = new Date(day.dateString);
@@ -72,43 +63,18 @@ const Projects = () => {
         }
     
         setCalendar(false);
-    }; 
-    
-    const handleImageUpload = () => {
-        launchImageLibrary(
-            { mediaType: 'photo', quality: 1 },
-            (response) => {
-                if (response.didCancel) {
-                    console.log('Image picker cancelled');
-                } else if (response.errorCode) {
-                    console.error('Image picker error: ', response.errorMessage);
-                } else {
-                    const uri = response.assets[0]?.uri;
-                    if (uri) setImageURI(uri);
-                }
-            }
-        );
-    };    
+    };   
 
-    const submitProject = async () => {
+    const submitDesire = async () => {
         let valid = true;
 
         setTitleError('');
-        setStyleError('');
         setDescError('');
         setStartDateError('');
         setEndDateError('');
-        setBudgetError('');
-        setLocationError('');
-        setCategoryError('');
 
         if (!title) {
             setTitleError('Title cannot be empty.');
-            valid = false;
-        }
-
-        if (!style) {
-            setStyleError('Style cannot be empty.');
             valid = false;
         }
 
@@ -140,72 +106,47 @@ const Projects = () => {
                 valid = false;
             }
         }
-        
-        if (!budget) {
-            setBudgetError('Budget cannot be empty.');
-            valid = false;
-        }
-
-        if (!location) {
-            setLocationError('Project location cannot be empty.');
-            valid = false;
-        }
-
-        if (!category) {
-            setCategoryError('Project category cannot be empty.');
-            valid = false;
-        }
 
         if (!valid) {
             console.log("Form validation failed!");
             return;
         }        
 
-        const newProject = {
+        const newDesire = {
             title,
-            style,
             desc,
             startDate,
             endDate,
-            budget,
-            location,
-            category,
-            imageURI,
             id: Date.now(),
             inprogress: true,
             done: false
         };
 
         try {
-            const existingProjects = await AsyncStorage.getItem('projects');
-            const projectsArray = existingProjects ? JSON.parse(existingProjects) : [];
-            projectsArray.push(newProject);
+            const existingDesires = await AsyncStorage.getItem('desires');
+            const desiresArray = existingDesires ? JSON.parse(existingDesires) : [];
+            desiresArray.push(newDesire);
 
-            await AsyncStorage.setItem('projects', JSON.stringify(projectsArray));
-            Alert.alert("Success", "Project added successfully!");
+            await AsyncStorage.setItem('desires', JSON.stringify(desiresArray));
+            Alert.alert("Success", "Desire added successfully!");
 
             setTitle('');
-            setStyle('');
             setDesc('');
             setStartDate(null);
             setEndDate(null);
-            setBudget('');
-            setLocation('');
-            setCategory('');
-            setImageURI(null);
 
             setAddPressed(false);
 
         } catch (error) {
-            console.error("Error saving project:", error);
-            Alert.alert("Error", "Failed to save project. Please try again.");
+            console.error("Error saving desire:", error);
+            Alert.alert("Error", "Failed to save desire. Please try again.");
         }
     };
 
-    const handleDeleteProject = async (id) => {
-        const updatedProjects = projects.filter((project) => project.id !== id);
-        setProjects(updatedProjects);
-        await AsyncStorage.setItem('projects', JSON.stringify(updatedProjects));
+    const handleDeleteDesire = async (id) => {
+        const updatedDesires = desires.filter((desire) => desire.id !== id);
+        setDesires(updatedDesires);
+        await AsyncStorage.setItem('desires', JSON.stringify(updatedDesires));
     };  
     
     return (
@@ -215,7 +156,7 @@ const Projects = () => {
                 <Icons type={'back'} />
             </TouchableOpacity>
 
-            <Text style={styles.title}>Gardening projects</Text>
+            <Text style={styles.title}>Green desires</Text>
 
             {
                 addPressed ? (
@@ -232,13 +173,14 @@ const Projects = () => {
                             {titleError ? <Text style={styles.error}>{titleError}</Text> : null}
 
                             <TextInput
-                                value={style}
-                                placeholder='Style'
+                                value={desc}
+                                placeholder='Description'
                                 placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setStyle(w)}
-                                style={styles.input}
+                                onChangeText={(d) => setDesc(d)}
+                                multiline={true}
+                                style={[styles.input, {height: 100}]}
                             />
-                            {styleError ? <Text style={styles.error}>{styleError}</Text> : null}
+                            {descError ? <Text style={styles.error}>{descError}</Text> : null}
 
                             <View style={{width: '100%'}}>
                                 <TextInput
@@ -289,62 +231,11 @@ const Projects = () => {
                                 )
                             }
 
-                            <TextInput
-                                value={location}
-                                placeholder='Project location'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setLocation(w)}
-                                style={styles.input}
-                            />
-                            {locationError ? <Text style={styles.error}>{locationError}</Text> : null}
-
-                            <TextInput
-                                value={budget ? `${budget} $` : ''}
-                                placeholder='Planned budget'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(b) => {
-                                    const numericValue = b.replace(/[^0-9]/g, '');
-                                    setBudget(numericValue);
-                                }}
-                                style={styles.input}
-                            />
-                            {budgetError ? <Text style={styles.error}>{budgetError}</Text> : null}
-
-                            <TextInput
-                                value={desc}
-                                placeholder='Description'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(d) => setDesc(d)}
-                                multiline={true}
-                                style={[styles.input, {height: 100}]}
-                            />
-                            {descError ? <Text style={styles.error}>{descError}</Text> : null}
-
-                            <TextInput
-                                value={category}
-                                placeholder='Project category'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setCategory(w)}
-                                style={styles.input}
-                            />
-                            {categoryError ? <Text style={styles.error}>{categoryError}</Text> : null}
-
-                            <Text style={styles.planText}>Garden plan</Text>
-
-                            <TouchableOpacity style={styles.imageUploadBtn} onPress={handleImageUpload}>
-                                {imageURI ? (
-                                    <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 12 }} />
-                                ) : (
-                                    <Image source={require('../assets/decor/image.png')} style={{width: 124, height: 124}} />
-                                )}
-                            </TouchableOpacity>
-
-
                             <View style={{height: 200}} />
                         </ScrollView>
                     </View>
                 ) : (
-                    projects.length > 0 ? (
+                    desires.length > 0 ? (
                         <View style={{width: '100%'}}>
 
                             <View style={styles.stateBtnsContainer}>
@@ -359,18 +250,17 @@ const Projects = () => {
 
                             <ScrollView style={{width: '100%'}}>
                                 <SwipeListView
-                                    data={activeProjects}
+                                    data={activeDesires}
                                     keyExtractor={(item) => item.id.toString()}
                                     renderItem={({ item }) => (
-                                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('ProjectDetailsScreen', {project: item})}>
+                                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('DesireDetailsScreen', {desire: item})}>
                                             <Text style={styles.cardTitle}>{item.title}</Text>
                                             <Text style={styles.date}>{item.startDate} - {item.endDate}</Text>
-                                            <Text style={styles.date}>{item.location}</Text>
                                             <Text style={styles.description} numberOfLines={3} ellipsizeMode="tail">{item.desc}</Text>
                                         </TouchableOpacity>
                                     )}
                                     renderHiddenItem={({ item }) => (
-                                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteProject(item.id)}>
+                                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteDesire(item.id)}>
                                             <Icons type={'delete'} />
                                         </TouchableOpacity>
                                     )}
@@ -385,7 +275,7 @@ const Projects = () => {
                         <View style={styles.noContainer}>
                             <Image style={styles.image} source={require('../assets/decor/dreams.png')} />
                             <Text style={styles.noTitle}>Nothing added yet</Text>
-                            <Text style={styles.noText}>Click on the button below to add a garden project</Text>
+                            <Text style={styles.noText}>Click on the button below to add a garden desire</Text>
                         </View>    
                     )
                 )
@@ -394,7 +284,7 @@ const Projects = () => {
             <TouchableOpacity style={styles.addBtn} onPress={() => {
                     if (addPressed) {
                         console.log('Submitting project...');
-                        submitProject();
+                        submitDesire();
                     } else {
                         console.log('Add button pressed');
                         setAddPressed(true);
@@ -616,4 +506,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Projects;
+export default Desires;

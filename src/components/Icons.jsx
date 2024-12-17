@@ -45,6 +45,9 @@ const Icons = ({ type, active }) => {
         imageSource = require('../assets/icons/edit.png');
         iconStyle.push(styles.white);
     break;
+    case 'more-info':
+        imageSource = require('../assets/icons/more-info.png');
+    break;
   }
 
   return (
