@@ -1,11 +1,11 @@
 import { View } from "react-native"
-import Home from "../components/Home"
+import Event from "../components/Event"
 import MenuPanel from "../components/MenuPanel";
 
-const HomeScreen = () => {
+const EventScreen = () => {
     return (
         <View style={styles.container}>
-            <Home />
+            <Event />
             <View style={styles.menu}>
                 <MenuPanel />
             </View>
@@ -25,4 +25,4 @@ const styles = {
     }
 }
 
-export default HomeScreen;
+export default EventScreen;

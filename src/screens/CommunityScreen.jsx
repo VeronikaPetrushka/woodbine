@@ -1,11 +1,11 @@
 import { View } from "react-native"
-import Home from "../components/Home"
+import Community from "../components/Community"
 import MenuPanel from "../components/MenuPanel";
 
-const HomeScreen = () => {
+const CommunityScreen = () => {
     return (
         <View style={styles.container}>
-            <Home />
+            <Community />
             <View style={styles.menu}>
                 <MenuPanel />
             </View>
@@ -25,4 +25,4 @@ const styles = {
     }
 }
 
-export default HomeScreen;
+export default CommunityScreen;

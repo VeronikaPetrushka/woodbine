@@ -1,11 +1,11 @@
 import { View } from "react-native"
-import Home from "../components/Home"
+import Profile from "../components/Profile"
 import MenuPanel from "../components/MenuPanel";
 
-const HomeScreen = () => {
+const ProfileScreen = () => {
     return (
         <View style={styles.container}>
-            <Home />
+            <Profile />
             <View style={styles.menu}>
                 <MenuPanel />
             </View>
@@ -25,4 +25,4 @@ const styles = {
     }
 }
 
-export default HomeScreen;
+export default ProfileScreen;

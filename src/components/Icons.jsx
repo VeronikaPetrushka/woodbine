@@ -1,30 +1,39 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 
-const Icons = ({ type }) => {
+const Icons = ({ type, active }) => {
 
   let imageSource;
   let iconStyle = [styles.icon];
 
   switch (type) {
-    // case 'home':
-    //   imageSource = require('../assets/panel/home.png');
-    //   iconStyle.push(styles.active);
-    //   break;
-    // case 'book':
-    //   imageSource = require('../assets/panel/book.png');
-    //   iconStyle.push(styles.active);
-    //   break;
-    // case 'goal':
-    //   imageSource = require('../assets/panel/goal.png');
-    //   iconStyle.push(styles.active);
-    //   break;
-    // case 'game':
-    //   imageSource = require('../assets/panel/game.png');
-    //   iconStyle.push(styles.active);
-    //   break;
+    case 'home':
+      imageSource = require('../assets/icons/home.png');
+      active && iconStyle.push(styles.active);
+      break;
+    case 'community':
+      imageSource = require('../assets/icons/community.png');
+      active && iconStyle.push(styles.active);
+      break;
+    case 'event':
+      imageSource = require('../assets/icons/event.png');
+      active && iconStyle.push(styles.active);
+      break;
+    case 'profile':
+      imageSource = require('../assets/icons/profile.png');
+      active && iconStyle.push(styles.active);
+      break;
     case 'arrow':
         imageSource = require('../assets/icons/arrow.png');
+    break;
+    case 'back':
+        imageSource = require('../assets/icons/back.png');
+    break;
+    case 'add':
+        imageSource = require('../assets/icons/add.png');
+    break;
+    case 'calendar':
+        imageSource = require('../assets/icons/calendar.png');
     break;
   }
 
