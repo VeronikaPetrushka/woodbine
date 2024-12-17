@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SwipeListView } from 'react-native-swipe-list-view';
 import { Calendar } from 'react-native-calendars';
 import Icons from './Icons';
 
@@ -120,6 +121,12 @@ const Dreams = () => {
         }
     };
 
+    const handleDeleteDream = async (id) => {
+        const updatedDreams = dreams.filter((dream) => dream.id !== id);
+        setDreams(updatedDreams);
+        await AsyncStorage.setItem('dreams', JSON.stringify(updatedDreams));
+    };    
+
     return (
         <View style={styles.container}>
 
@@ -218,12 +225,26 @@ const Dreams = () => {
                             <ScrollView style={{width: '100%'}}>
                                 {
                                     activeDreams.map((dream, index) => (
-                                        <TouchableOpacity key={index} style={styles.card} onPress={() => navigation.navigate('DreamDetailsScreen', {dream: dream})}>
-                                            <Text style={styles.wish}>{dream.wish}</Text>
-                                            <Text style={styles.date}>{dream.date}</Text>
-                                            <Text style={styles.description} numberOfLines={3} ellipsizeMode='tail'>{dream.desc}</Text>
-                                            <Text style={styles.budget}>{dream.budget} $</Text>
-                                        </TouchableOpacity>
+                                        <SwipeListView
+                                            data={activeDreams}
+                                            keyExtractor={(item) => item.id.toString()}
+                                            renderItem={({ item }) => (
+                                                <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('DreamDetailsScreen', {dream: item})}>
+                                                    <Text style={styles.wish}>{item.wish}</Text>
+                                                    <Text style={styles.date}>{item.date}</Text>
+                                                    <Text style={styles.description} numberOfLines={3} ellipsizeMode="tail">{item.desc}</Text>
+                                                    <Text style={styles.budget}>{item.budget} $</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                            renderHiddenItem={({ item }) => (
+                                                <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteDream(item.id)}>
+                                                    <Icons type={'delete'} />
+                                                </TouchableOpacity>
+                                            )}
+                                            rightOpenValue={-80}
+                                            disableRightSwipe={true}
+                                        />
+
                                     ))
                                 }
                                 <View style={{height: 170}} />
@@ -428,6 +449,14 @@ const styles = StyleSheet.create({
         fontWeight: '900',
         color: '#ed2124',
         lineHeight: 30.48
+    },
+
+    deleteButton: {
+        width: 24,
+        height: 24,
+        position: 'absolute',
+        top: '50%',
+        right: 20
     }
 
 });

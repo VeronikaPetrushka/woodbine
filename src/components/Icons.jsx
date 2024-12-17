@@ -38,6 +38,9 @@ const Icons = ({ type, active }) => {
     case 'done':
         imageSource = require('../assets/icons/done.png');
     break;
+    case 'delete':
+        imageSource = require('../assets/icons/delete.png');
+    break;
   }
 
   return (
