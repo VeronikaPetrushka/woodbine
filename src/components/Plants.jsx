@@ -30,7 +30,7 @@ const Plants = () => {
             <ScrollView style={{width: '100%'}}>
                 {
                     plants.map((plant, index) => (
-                        <View key={index} style={[styles.card, { height: expandedPlant === plant ? 140 : 75 }]}>
+                        <View key={index} style={[styles.card, { height: expandedPlant === plant ? 165 : 75 }]}>
                             <Text style={styles.name}>{plant.name}</Text>
                             <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}}> 
                                 <Text style={[styles.text, expandedPlant === plant && { marginBottom: 5 }]}>Care tips</Text>

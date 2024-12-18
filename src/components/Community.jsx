@@ -113,9 +113,6 @@ const Community = () => {
             {
                 addPressed ? (
                     <View style={{width: '100%', height: '100%'}}>
-                        <TouchableOpacity style={styles.back} onPress={() => setAddPressed(false)}>
-                            <Icons type={'back'} />
-                        </TouchableOpacity>
                         <Text style={styles.title}>Add post</Text>
 
                         <ScrollView style={{width: '100%'}}>
@@ -149,13 +146,13 @@ const Community = () => {
                                 posts?.map((post, index) => (
                                     <TouchableOpacity key={index} style={styles.post} onPress={() => navigation.navigate('PostDetailsScreen', {post: post})}>
                                         <Image source={{uri: post.imageURI}} style={styles.postImage} />
-                                        <Text style={styles.postDesc} numberOfLines={1} ellipsizeMode="tail">{post.desc}</Text>
+                                        <Text style={styles.postDesc} numberOfLines={3} ellipsizeMode="tail">{post.desc}</Text>
                                     </TouchableOpacity>
                                 ))
                             }
                         </ScrollView>
 
-                        <View style={{height: 150}} />
+                        <View style={{height: 170}} />
 
                     </View>
                 )
@@ -262,7 +259,7 @@ const styles = StyleSheet.create({
 
     post: {
         width: '100%',
-        height: 285,
+        height: 250,
         alignItems: 'flex-start',
         justifyContent: 'flex-start',
         marginBottom: 24
@@ -270,7 +267,7 @@ const styles = StyleSheet.create({
 
     postImage: {
         width: '100%',
-        height: 170,
+        height: 180,
         borderRadius: 12,
         resizeMode: 'cover',
         marginBottom: 11
