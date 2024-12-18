@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert, Linking, Modal } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -8,6 +8,7 @@ import Icons from './Icons';
 const { height } = Dimensions.get('screen');
 
 const Profile = () => {
+    const [resetModalVisible, setResetModalVisible] = useState(false);
     const [profilePressed, setProfilePressed] = useState(false);
     const [imageURI, setImageURI] = useState(null);
     const [name, setName] = useState('');
@@ -15,8 +16,8 @@ const Profile = () => {
     const [birthDate, setBirthDate] = useState(null);
     const [isValid, setIsValid] = useState(true);
     const [profile, setProfile] = useState({});
-    const [desires, setDesires] = useState(null);
-    const [projects, setProjects] = useState(null);
+    const [desires, setDesires] = useState(0);
+    const [projects, setProjects] = useState(0);
 
     const [nameError, setNameError] = useState('');
     const [surnameError, setSurnameError] = useState('');
@@ -110,6 +111,11 @@ const Profile = () => {
             return `${numericInput.slice(0, 2)}.${numericInput.slice(2, 4)}.${numericInput.slice(4, 8)}`;
         }
     };
+
+    const handlePrivacyPolicy = () => {
+        const url = 'https://www.termsfeed.com/live/b16b9707-235b-47ec-a3fa-de589ddbfca7';
+        Linking.openURL(url).catch((err) => console.error('Failed to open URL:', err));
+    };    
     
     const validation = () => {
         let valid = true;
@@ -165,6 +171,37 @@ const Profile = () => {
         } catch (error) {
             console.error("Error updating profile:", error);
             Alert.alert("Error", "Failed to update profile. Please try again.");
+        }
+    };
+
+    const handleReset = async () => {
+        try {
+            await AsyncStorage.removeItem('profile');
+            await AsyncStorage.removeItem('desires');
+            await AsyncStorage.removeItem('dreams');
+            await AsyncStorage.removeItem('projects');
+            await AsyncStorage.removeItem('posts');
+
+            setResetModalVisible(false);
+
+            Alert.alert('Progress Reset', 'Your progress has been reset successfully!', [
+                { text: 'OK', onPress: () => console.log('OK Pressed') }
+            ]);
+
+            setName('');
+            setSurname('');
+            setBirthDate(null);
+            setImageURI(null);
+            setDesires(0);
+            setProjects(0);
+
+            await loadProfile(); 
+            await loadDesires();
+            await loadProjects();
+
+        } catch (error) {
+            console.error('Error resetting progress:', error);
+            Alert.alert('Error', 'There was a problem resetting your progress. Please try again later.');
         }
     };
 
@@ -226,7 +263,7 @@ const Profile = () => {
 
                         <Text style={styles.title}>Profile</Text>
 
-                        <View style={styles.image}>
+                        <View style={[styles.imageUploadBtn, {marginBottom: 10}]}>
                             {imageURI ? (
                                 <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: '100%' }} />
                             ) : (
@@ -234,13 +271,13 @@ const Profile = () => {
                             )}
                         </View>
 
-                        <Text style={styles.name}>{name} {surname}</Text>
+                        <Text style={styles.name}>{name || surname ? `${name} ${surname}` : 'Name Surname'}</Text>
 
                         <View style={styles.dateContainer}>
                             <View style={styles.dateIcon}>
                                 <Icons type={'calendar'} grey />
                             </View>
-                            <Text style={styles.date}>{birthDate}</Text>
+                            <Text style={styles.date}>{birthDate ? `${birthDate}` : 'date of birth'}</Text>
                         </View>
 
                         <ScrollView style={{width: '100%'}}>
@@ -252,9 +289,16 @@ const Profile = () => {
                                     </TouchableOpacity>
                                 </View>
 
-                                <View style={[styles.btn, {borderBottomWidth: 0}]}>
+                                <View style={styles.btn}>
                                     <Text style={styles.btnText}>Privacy policy</Text>
-                                    <TouchableOpacity style={styles.btnIcon}>
+                                    <TouchableOpacity style={styles.btnIcon} onPress={handlePrivacyPolicy}>
+                                        <Icons type={'profile-arrow'} />
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View style={[styles.btn, {borderBottomWidth: 0}]}>
+                                    <Text style={styles.btnText}>Clear data</Text>
+                                    <TouchableOpacity style={styles.btnIcon} onPress={() => setResetModalVisible(true)}>
                                         <Icons type={'profile-arrow'} />
                                     </TouchableOpacity>
                                 </View>
@@ -278,6 +322,27 @@ const Profile = () => {
                     </View>
                 )
             }
+
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={resetModalVisible}
+                onRequestClose={() => setResetModalVisible(false)}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={[styles.modalText, {color: '#ff0004', fontWeight: '800', marginBottom: 15, fontSize: 20}]}>Reset</Text>
+                        <Text style={styles.modalText}>Are you sure, you want to clear your entire data ? This action cannot be canceled once it will be done and it will delete your account along with garden dreams, projects, desires, and posts !</Text>
+                        <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginTop: 20}}>
+                            <TouchableOpacity style={styles.closeBtn} onPress={() => setResetModalVisible(false)}>
+                                <Text style={styles.closeBtnText}>Close</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.closeBtn, {backgroundColor: '#ff0004'}]} onPress={handleReset}>
+                                <Text style={styles.closeBtnText}>Confirm</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
         </View>
     )
@@ -309,15 +374,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: height * 0.065,
         left: 20
-    },
-
-    image: {
-        width: 173,
-        height: 173,
-        borderRadius: '100%',
-        resizeMode: 'cover',
-        marginBottom: 10,
-        alignSelf: 'center'
     },
 
     name: {
@@ -477,6 +533,52 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         marginBottom: 10,
     },
+
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
+
+    modalContent: {
+        width: '85%',
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 16,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 20,
+            height: 20,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+
+    modalText: {
+        fontSize: 18,
+        fontWeight: '400',
+        color: '#3C3C3B',
+        textAlign: 'center',
+        lineHeight: 21
+    },
+
+    closeBtn: {
+        padding: 8,
+        width: '48%',
+        backgroundColor: '#2b2b2b',
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    closeBtnText: {
+        fontSize: 16,
+        fontWeight: '800',
+        color: '#fff',
+    }
+
 
 });
 
