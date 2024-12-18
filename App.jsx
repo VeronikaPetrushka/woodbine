@@ -11,6 +11,11 @@ import ProjectDetailsScreen from './src/screens/ProjectDetailsScreen';
 import DesiresScreen from './src/screens/DesiresScreen';
 import DesireDetailsScreen from './src/screens/DesireDetailsScreen';
 import PlantsScreen from './src/screens/PlantsScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import CommunityScreen from './src/screens/CommunityScreen';
+import PostDetailsScreen from './src/screens/PostDetailsScreen';
+import EventsScreen from './src/screens/EventsScreen';
+import EventDetailsScreen from './src/screens/EventDetailsScreen';
 
 enableScreens();
 
@@ -59,6 +64,31 @@ const App = () => {
                   <Stack.Screen 
                       name="PlantsScreen" 
                       component={PlantsScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="ProfileScreen" 
+                      component={ProfileScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="CommunityScreen" 
+                      component={CommunityScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="PostDetailsScreen" 
+                      component={PostDetailsScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="EventsScreen" 
+                      component={EventsScreen} 
+                      options={{ headerShown: false }} 
+                  />
+                  <Stack.Screen 
+                      name="EventDetailsScreen" 
+                      component={EventDetailsScreen} 
                       options={{ headerShown: false }} 
                   />
               </Stack.Navigator>

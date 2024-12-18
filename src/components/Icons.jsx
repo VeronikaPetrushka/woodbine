@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 
-const Icons = ({ type, active }) => {
+const Icons = ({ type, active, grey }) => {
 
   let imageSource;
   let iconStyle = [styles.icon];
@@ -34,6 +34,7 @@ const Icons = ({ type, active }) => {
     break;
     case 'calendar':
         imageSource = require('../assets/icons/calendar.png');
+        grey && iconStyle.push(styles.grey);
     break;
     case 'done':
         imageSource = require('../assets/icons/done.png');
@@ -47,6 +48,12 @@ const Icons = ({ type, active }) => {
     break;
     case 'more-info':
         imageSource = require('../assets/icons/more-info.png');
+    break;
+    case 'profile-arrow':
+        imageSource = require('../assets/icons/profile-arrow.png');
+    break;
+    case 'location':
+        imageSource = require('../assets/icons/location.png');
     break;
   }
 
@@ -81,6 +88,13 @@ const styles = StyleSheet.create({
     height: '100%',
     objectFit: 'cover',
     tintColor: '#fff',
+  },
+  grey: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    tintColor: '#fff',
+    opacity: 0.5
   }
 });
 

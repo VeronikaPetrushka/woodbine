@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { Calendar } from 'react-native-calendars';
 import Icons from './Icons';

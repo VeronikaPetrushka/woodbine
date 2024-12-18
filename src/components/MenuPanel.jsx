@@ -42,11 +42,11 @@ const MenuPanel = () => {
                 </TouchableOpacity>
             </View>
 
-            <View style={[styles.btnContainer, activeButton === 'EventScreen' && {backgroundColor: '#ed2124'}]}>
+            <View style={[styles.btnContainer, activeButton === 'EventsScreen' && {backgroundColor: '#ed2124'}]}>
                 <TouchableOpacity 
                     style={styles.button} 
-                    onPress={() => handleNavigate('EventScreen')}>
-                    <Icons type={'event'} active={activeButton === 'EventScreen'}/>
+                    onPress={() => handleNavigate('EventsScreen')}>
+                    <Icons type={'event'} active={activeButton === 'EventsScreen'}/>
                 </TouchableOpacity>
             </View>
 
