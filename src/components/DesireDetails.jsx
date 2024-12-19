@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert, ImageBackground } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import { Calendar } from 'react-native-calendars';
@@ -150,102 +150,104 @@ const DesireDetails = ({ desire }) => {
     };
     
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
-                <Icons type={'back'} />
-            </TouchableOpacity>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
+                    <Icons type={'back'} />
+                </TouchableOpacity>
 
-            <Text style={styles.title}>Green desire</Text>
+                <Text style={styles.title}>Green desire</Text>
 
-            <ScrollView style={{width: '100%'}}>
+                <ScrollView style={{width: '100%'}}>
 
-                <TextInput
-                    value={title}
-                    placeholder='Title'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(w) => setTitle(w)}
-                    style={styles.input}
-                />
-                {titleError ? <Text style={styles.error}>{titleError}</Text> : null}
-
-                <TextInput
-                    value={desc}
-                    placeholder='Description'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(d) => setDesc(d)}
-                    multiline={true}
-                    style={[styles.input, {height: 100}]}
-                />
-                {descError ? <Text style={styles.error}>{descError}</Text> : null}
-
-                <View style={{width: '100%'}}>
                     <TextInput
-                        value={startDate}
-                        placeholder='Start date'
+                        value={title}
+                        placeholder='Title'
                         placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                        style={[styles.input, {paddingLeft: 44}]}
-                        editable={false}
+                        onChangeText={(w) => setTitle(w)}
+                        style={styles.input}
                     />
-                    <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('start'); setCalendar(true); }}>
-                        <Icons type={'calendar'} />
-                    </TouchableOpacity>
-                </View>
-                {startDateError ? <Text style={styles.error}>{startDateError}</Text> : null}
+                    {titleError ? <Text style={styles.error}>{titleError}</Text> : null}
 
-                <View style={{width: '100%'}}>
                     <TextInput
-                        value={endDate}
-                        placeholder='End date'
+                        value={desc}
+                        placeholder='Description'
                         placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                        style={[styles.input, {paddingLeft: 44}]}
-                        editable={false}
+                        onChangeText={(d) => setDesc(d)}
+                        multiline={true}
+                        style={[styles.input, {height: 100}]}
                     />
-                    <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('end'); setCalendar(true); }}>
-                        <Icons type={'calendar'} />
-                    </TouchableOpacity>
-                </View>
-                {endDateError ? <Text style={styles.error}>{endDateError}</Text> : null}
+                    {descError ? <Text style={styles.error}>{descError}</Text> : null}
 
-                {
-                    calendar && (
-                        <Calendar
-                            style={{ width: width * 0.89, borderRadius: 12, marginBottom: 10 }}
-                            onDayPress={handleDayPress}
-                            markedDates={{
-                                [startDate]: { selected: selectingDate === 'start', selectedColor: '#ff0004' },
-                                [endDate]: { selected: selectingDate === 'end', selectedColor: '#ff0004' },
-                            }}
-                            theme={{
-                                selectedDayBackgroundColor: '#ff0004',
-                                todayTextColor: '#ff0004',
-                                arrowColor: '#ff0004',
-                                textDayFontWeight: '500',
-                                textMonthFontWeight: 'bold',
-                                textDayHeaderFontWeight: '500',
-                            }}
+                    <View style={{width: '100%'}}>
+                        <TextInput
+                            value={startDate}
+                            placeholder='Start date'
+                            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                            style={[styles.input, {paddingLeft: 44}]}
+                            editable={false}
                         />
-                    )
-                }
+                        <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('start'); setCalendar(true); }}>
+                            <Icons type={'calendar'} />
+                        </TouchableOpacity>
+                    </View>
+                    {startDateError ? <Text style={styles.error}>{startDateError}</Text> : null}
 
-                <View style={{height: 200}} />
+                    <View style={{width: '100%'}}>
+                        <TextInput
+                            value={endDate}
+                            placeholder='End date'
+                            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                            style={[styles.input, {paddingLeft: 44}]}
+                            editable={false}
+                        />
+                        <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('end'); setCalendar(true); }}>
+                            <Icons type={'calendar'} />
+                        </TouchableOpacity>
+                    </View>
+                    {endDateError ? <Text style={styles.error}>{endDateError}</Text> : null}
 
-            </ScrollView>
+                    {
+                        calendar && (
+                            <Calendar
+                                style={{ width: width * 0.89, borderRadius: 12, marginBottom: 10 }}
+                                onDayPress={handleDayPress}
+                                markedDates={{
+                                    [startDate]: { selected: selectingDate === 'start', selectedColor: '#ff0004' },
+                                    [endDate]: { selected: selectingDate === 'end', selectedColor: '#ff0004' },
+                                }}
+                                theme={{
+                                    selectedDayBackgroundColor: '#ff0004',
+                                    todayTextColor: '#ff0004',
+                                    arrowColor: '#ff0004',
+                                    textDayFontWeight: '500',
+                                    textMonthFontWeight: 'bold',
+                                    textDayHeaderFontWeight: '500',
+                                }}
+                            />
+                        )
+                    }
 
-            <TouchableOpacity style={[styles.doneBtn, {backgroundColor: '#0080ff', bottom: height * 0.15}, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editDesire}>
-                <View style={[styles.doneIcon, {marginRight: 6}]}>
-                    <Icons type={'edit'} />
-                </View>
-                <Text style={styles.doneBtnText}>Edit</Text>
-            </TouchableOpacity>
+                    <View style={{height: 200}} />
 
-            <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={submitDesire}>
-                <View style={styles.doneIcon}>
-                    <Icons type={'done'} />
-                </View>
-                <Text style={styles.doneBtnText}>Done</Text>
-            </TouchableOpacity>
+                </ScrollView>
 
-        </View>
+                <TouchableOpacity style={[styles.doneBtn, {backgroundColor: '#0080ff', bottom: height * 0.15}, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editDesire}>
+                    <View style={[styles.doneIcon, {marginRight: 6}]}>
+                        <Icons type={'edit'} />
+                    </View>
+                    <Text style={styles.doneBtnText}>Edit</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={submitDesire}>
+                    <View style={styles.doneIcon}>
+                        <Icons type={'done'} />
+                    </View>
+                    <Text style={styles.doneBtnText}>Done</Text>
+                </TouchableOpacity>
+
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -257,7 +259,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

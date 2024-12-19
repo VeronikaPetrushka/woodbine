@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert, ImageBackground } from 'react-native'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -149,154 +149,156 @@ const Desires = () => {
     };  
     
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-            <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
-                <Icons type={'back'} />
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
+                    <Icons type={'back'} />
+                </TouchableOpacity>
 
-            <Text style={styles.title}>Green desires</Text>
+                <Text style={styles.title}>Green desires</Text>
 
-            {
-                addPressed ? (
-                    <View style={{width: '100%'}}>
-                        <ScrollView style={{width: '100%'}}>
-
-                            <TextInput
-                                value={title}
-                                placeholder='Title'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setTitle(w)}
-                                style={styles.input}
-                            />
-                            {titleError ? <Text style={styles.error}>{titleError}</Text> : null}
-
-                            <TextInput
-                                value={desc}
-                                placeholder='Description'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(d) => setDesc(d)}
-                                multiline={true}
-                                style={[styles.input, {height: 100}]}
-                            />
-                            {descError ? <Text style={styles.error}>{descError}</Text> : null}
-
-                            <View style={{width: '100%'}}>
-                                <TextInput
-                                    value={startDate}
-                                    placeholder='Start date'
-                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                    style={[styles.input, {paddingLeft: 44}]}
-                                    editable={false}
-                                />
-                                <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('start'); setCalendar(true); }}>
-                                    <Icons type={'calendar'} />
-                                </TouchableOpacity>
-                            </View>
-                            {startDateError ? <Text style={styles.error}>{startDateError}</Text> : null}
-
-                            <View style={{width: '100%'}}>
-                                <TextInput
-                                    value={endDate}
-                                    placeholder='End date'
-                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                    style={[styles.input, {paddingLeft: 44}]}
-                                    editable={false}
-                                />
-                                <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('end'); setCalendar(true); }}>
-                                    <Icons type={'calendar'} />
-                                </TouchableOpacity>
-                            </View>
-                            {endDateError ? <Text style={styles.error}>{endDateError}</Text> : null}
-
-                            {
-                                calendar && (
-                                    <Calendar
-                                        style={{ width: width * 0.89, borderRadius: 12, marginBottom: 10 }}
-                                        onDayPress={handleDayPress}
-                                        markedDates={{
-                                            [startDate]: { selected: selectingDate === 'start', selectedColor: '#ff0004' },
-                                            [endDate]: { selected: selectingDate === 'end', selectedColor: '#ff0004' },
-                                        }}
-                                        theme={{
-                                            selectedDayBackgroundColor: '#ff0004',
-                                            todayTextColor: '#ff0004',
-                                            arrowColor: '#ff0004',
-                                            textDayFontWeight: '500',
-                                            textMonthFontWeight: 'bold',
-                                            textDayHeaderFontWeight: '500',
-                                        }}
-                                    />
-                                )
-                            }
-
-                            <View style={{height: 200}} />
-                        </ScrollView>
-                    </View>
-                ) : (
-                    desires.length > 0 ? (
+                {
+                    addPressed ? (
                         <View style={{width: '100%'}}>
-
-                            <View style={styles.stateBtnsContainer}>
-                                <TouchableOpacity style={[styles.stateBtn, {marginRight: 15}, active === 'inprogress' && {backgroundColor: '#ed2124'}]} onPress={() => setActive('inprogress')}>
-                                    <Text style={[styles.stateBtnText, active === 'done' && {opacity: 0.5}]}>In progress</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={[styles.stateBtn, active === 'done' && {backgroundColor: '#ed2124'}]} onPress={() => setActive('done')}>
-                                    <Text style={[styles.stateBtnText, active === 'inprogress' && {opacity: 0.5}]}>Finished</Text>
-                                </TouchableOpacity>
-                            </View>
-
                             <ScrollView style={{width: '100%'}}>
-                                <SwipeListView
-                                    data={activeDesires}
-                                    keyExtractor={(item) => item.id.toString()}
-                                    renderItem={({ item }) => (
-                                        <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('DesireDetailsScreen', {desire: item})}>
-                                            <Text style={styles.cardTitle}>{item.title}</Text>
-                                            <Text style={styles.date}>{item.startDate} - {item.endDate}</Text>
-                                            <Text style={styles.description} numberOfLines={3} ellipsizeMode="tail">{item.desc}</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                    renderHiddenItem={({ item }) => (
-                                        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteDesire(item.id)}>
-                                            <Icons type={'delete'} />
-                                        </TouchableOpacity>
-                                    )}
-                                    rightOpenValue={-80}
-                                    disableRightSwipe={true}
-                                />
-                                <View style={{height: 170}} />
-                            </ScrollView>
 
+                                <TextInput
+                                    value={title}
+                                    placeholder='Title'
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    onChangeText={(w) => setTitle(w)}
+                                    style={styles.input}
+                                />
+                                {titleError ? <Text style={styles.error}>{titleError}</Text> : null}
+
+                                <TextInput
+                                    value={desc}
+                                    placeholder='Description'
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    onChangeText={(d) => setDesc(d)}
+                                    multiline={true}
+                                    style={[styles.input, {height: 100}]}
+                                />
+                                {descError ? <Text style={styles.error}>{descError}</Text> : null}
+
+                                <View style={{width: '100%'}}>
+                                    <TextInput
+                                        value={startDate}
+                                        placeholder='Start date'
+                                        placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                        style={[styles.input, {paddingLeft: 44}]}
+                                        editable={false}
+                                    />
+                                    <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('start'); setCalendar(true); }}>
+                                        <Icons type={'calendar'} />
+                                    </TouchableOpacity>
+                                </View>
+                                {startDateError ? <Text style={styles.error}>{startDateError}</Text> : null}
+
+                                <View style={{width: '100%'}}>
+                                    <TextInput
+                                        value={endDate}
+                                        placeholder='End date'
+                                        placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                        style={[styles.input, {paddingLeft: 44}]}
+                                        editable={false}
+                                    />
+                                    <TouchableOpacity style={styles.calendarIcon} onPress={() => { setSelectingDate('end'); setCalendar(true); }}>
+                                        <Icons type={'calendar'} />
+                                    </TouchableOpacity>
+                                </View>
+                                {endDateError ? <Text style={styles.error}>{endDateError}</Text> : null}
+
+                                {
+                                    calendar && (
+                                        <Calendar
+                                            style={{ width: width * 0.89, borderRadius: 12, marginBottom: 10 }}
+                                            onDayPress={handleDayPress}
+                                            markedDates={{
+                                                [startDate]: { selected: selectingDate === 'start', selectedColor: '#ff0004' },
+                                                [endDate]: { selected: selectingDate === 'end', selectedColor: '#ff0004' },
+                                            }}
+                                            theme={{
+                                                selectedDayBackgroundColor: '#ff0004',
+                                                todayTextColor: '#ff0004',
+                                                arrowColor: '#ff0004',
+                                                textDayFontWeight: '500',
+                                                textMonthFontWeight: 'bold',
+                                                textDayHeaderFontWeight: '500',
+                                            }}
+                                        />
+                                    )
+                                }
+
+                                <View style={{height: 200}} />
+                            </ScrollView>
                         </View>
                     ) : (
-                        <View style={styles.noContainer}>
-                            <Image style={styles.image} source={require('../assets/decor/dreams.png')} />
-                            <Text style={styles.noTitle}>Nothing added yet</Text>
-                            <Text style={styles.noText}>Click on the button below to add a garden desire</Text>
-                        </View>    
+                        desires.length > 0 ? (
+                            <View style={{width: '100%'}}>
+
+                                <View style={styles.stateBtnsContainer}>
+                                    <TouchableOpacity style={[styles.stateBtn, {marginRight: 15}, active === 'inprogress' && {backgroundColor: '#ed2124'}]} onPress={() => setActive('inprogress')}>
+                                        <Text style={[styles.stateBtnText, active === 'done' && {opacity: 0.5}]}>In progress</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={[styles.stateBtn, active === 'done' && {backgroundColor: '#ed2124'}]} onPress={() => setActive('done')}>
+                                        <Text style={[styles.stateBtnText, active === 'inprogress' && {opacity: 0.5}]}>Finished</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                <ScrollView style={{width: '100%'}}>
+                                    <SwipeListView
+                                        data={activeDesires}
+                                        keyExtractor={(item) => item.id.toString()}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('DesireDetailsScreen', {desire: item})}>
+                                                <Text style={styles.cardTitle}>{item.title}</Text>
+                                                <Text style={styles.date}>{item.startDate} - {item.endDate}</Text>
+                                                <Text style={styles.description} numberOfLines={3} ellipsizeMode="tail">{item.desc}</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        renderHiddenItem={({ item }) => (
+                                            <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteDesire(item.id)}>
+                                                <Icons type={'delete'} />
+                                            </TouchableOpacity>
+                                        )}
+                                        rightOpenValue={-80}
+                                        disableRightSwipe={true}
+                                    />
+                                    <View style={{height: 170}} />
+                                </ScrollView>
+
+                            </View>
+                        ) : (
+                            <View style={styles.noContainer}>
+                                <Image style={styles.image} source={require('../assets/decor/dreams.png')} />
+                                <Text style={styles.noTitle}>Nothing added yet</Text>
+                                <Text style={styles.noText}>Click on the button below to add a garden desire</Text>
+                            </View>    
+                        )
                     )
-                )
-            }
+                }
 
-            <TouchableOpacity style={styles.addBtn} onPress={() => {
-                    if (addPressed) {
-                        console.log('Submitting project...');
-                        submitDesire();
-                    } else {
-                        console.log('Add button pressed');
-                        setAddPressed(true);
-                    }
-                }}
-                >
-                <View style={styles.addIcon}>
-                    <Icons type={'add'} />
-                </View>
-                <Text style={styles.addBtnText}>Add</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.addBtn} onPress={() => {
+                        if (addPressed) {
+                            console.log('Submitting project...');
+                            submitDesire();
+                        } else {
+                            console.log('Add button pressed');
+                            setAddPressed(true);
+                        }
+                    }}
+                    >
+                    <View style={styles.addIcon}>
+                        <Icons type={'add'} />
+                    </View>
+                    <Text style={styles.addBtnText}>Add</Text>
+                </TouchableOpacity>
 
-        </View>
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -308,7 +310,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

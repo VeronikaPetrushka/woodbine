@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ScrollView, ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Icons from './Icons';
 
@@ -9,37 +9,39 @@ const EventDetails = ({ event }) => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-            <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
-                <Icons type={'back'} />
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
+                    <Icons type={'back'} />
+                </TouchableOpacity>
 
-            <Text style={styles.title}>Event</Text>
+                <Text style={styles.title}>Event</Text>
 
-            <Image source={event.image} style={styles.image} />
+                <Image source={event.image} style={styles.image} />
 
-            <Text style={styles.name}>{event.name}</Text>
+                <Text style={styles.name}>{event.name}</Text>
 
-            <View style={styles.locationContainer}>
+                <View style={styles.locationContainer}>
 
-                <View style={styles.locationIcon}>
-                    <Icons type={'location'} />
+                    <View style={styles.locationIcon}>
+                        <Icons type={'location'} />
+                    </View>
+
+                    <Text style={[styles.description, {marginBottom: 0}]}>{event.location}</Text>
+
                 </View>
 
-                <Text style={[styles.description, {marginBottom: 0}]}>{event.location}</Text>
+                <ScrollView style={{width: '100%'}}>
+                    {
+                        event.description.map((desc, i) => (
+                            <Text key={i} style={styles.description}>{desc}</Text>
+                        ))
+                    }
+                </ScrollView>
 
             </View>
-
-            <ScrollView style={{width: '100%'}}>
-                {
-                    event.description.map((desc, i) => (
-                        <Text key={i} style={styles.description}>{desc}</Text>
-                    ))
-                }
-            </ScrollView>
-
-            </View>
+        </ImageBackground>
     )
 };
 
@@ -51,7 +53,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     back: {

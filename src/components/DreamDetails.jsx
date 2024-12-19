@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert, ImageBackground } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'
 import { Calendar } from 'react-native-calendars';
@@ -134,97 +134,99 @@ const DreamDetails = ({ dream }) => {
     };
     
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
-                <Icons type={'back'} />
-            </TouchableOpacity>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
+                    <Icons type={'back'} />
+                </TouchableOpacity>
 
-            <Text style={styles.title}>Garden Dream</Text>
+                <Text style={styles.title}>Garden Dream</Text>
 
-            <ScrollView style={{width: '100%'}}>
+                <ScrollView style={{width: '100%'}}>
 
-                <TextInput
-                    value={wish}
-                    placeholder='Your wish'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(w) => setWish(w)}
-                    style={styles.input}
-                />
-                {wishError ? <Text style={styles.error}>{wishError}</Text> : null}
-
-                <TextInput
-                    value={desc}
-                    placeholder='Description'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(d) => setDesc(d)}
-                    multiline={true}
-                    style={[styles.input, {height: 100}]}
-                />
-                {descError ? <Text style={styles.error}>{descError}</Text> : null}
-
-                <View style={{width: '100%'}}>
                     <TextInput
-                        value={date}
-                        placeholder='Date'
+                        value={wish}
+                        placeholder='Your wish'
                         placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                        style={[styles.input, {paddingLeft: 44}]}
-                        editable={false}
+                        onChangeText={(w) => setWish(w)}
+                        style={styles.input}
                     />
-                    <TouchableOpacity style={styles.calendarIcon} onPress={() => setCalendar(true)}>
-                        <Icons type={'calendar'} />
-                    </TouchableOpacity>
-                </View>
-                {dateError ? <Text style={styles.error}>{dateError}</Text> : null}
+                    {wishError ? <Text style={styles.error}>{wishError}</Text> : null}
 
-                {
-                    calendar && (
-                        <Calendar
-                            style={{ width: width * 0.89, borderRadius: 12, marginBottom: 10 }}
-                            onDayPress={handleDayPress}
-                            markedDates={{
-                                [date]: { selected: true, selectedColor: '#ff0004' },
-                            }}
-                            theme={{
-                                selectedDayBackgroundColor: '#ff0004',
-                                todayTextColor: '#ff0004',
-                                arrowColor: '#ff0004',
-                                textDayFontWeight: '500',
-                                textMonthFontWeight: 'bold',
-                                textDayHeaderFontWeight: '500',
-                            }}
+                    <TextInput
+                        value={desc}
+                        placeholder='Description'
+                        placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                        onChangeText={(d) => setDesc(d)}
+                        multiline={true}
+                        style={[styles.input, {height: 100}]}
+                    />
+                    {descError ? <Text style={styles.error}>{descError}</Text> : null}
+
+                    <View style={{width: '100%'}}>
+                        <TextInput
+                            value={date}
+                            placeholder='Date'
+                            placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                            style={[styles.input, {paddingLeft: 44}]}
+                            editable={false}
                         />
-                    )
-                }
-                <TextInput
-                    value={budget ? `${budget} $` : ''}
-                    placeholder='Planned budget'
-                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                    onChangeText={(b) => {
-                        const numericValue = b.replace(/[^0-9]/g, '');
-                        setBudget(numericValue);
-                    }}
-                    style={styles.input}
-                />
-                {budgetError ? <Text style={styles.error}>{budgetError}</Text> : null}
+                        <TouchableOpacity style={styles.calendarIcon} onPress={() => setCalendar(true)}>
+                            <Icons type={'calendar'} />
+                        </TouchableOpacity>
+                    </View>
+                    {dateError ? <Text style={styles.error}>{dateError}</Text> : null}
 
-                <View style={{height: 200}} />
-            </ScrollView>
+                    {
+                        calendar && (
+                            <Calendar
+                                style={{ width: width * 0.89, borderRadius: 12, marginBottom: 10 }}
+                                onDayPress={handleDayPress}
+                                markedDates={{
+                                    [date]: { selected: true, selectedColor: '#ff0004' },
+                                }}
+                                theme={{
+                                    selectedDayBackgroundColor: '#ff0004',
+                                    todayTextColor: '#ff0004',
+                                    arrowColor: '#ff0004',
+                                    textDayFontWeight: '500',
+                                    textMonthFontWeight: 'bold',
+                                    textDayHeaderFontWeight: '500',
+                                }}
+                            />
+                        )
+                    }
+                    <TextInput
+                        value={budget ? `${budget} $` : ''}
+                        placeholder='Planned budget'
+                        placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                        onChangeText={(b) => {
+                            const numericValue = b.replace(/[^0-9]/g, '');
+                            setBudget(numericValue);
+                        }}
+                        style={styles.input}
+                    />
+                    {budgetError ? <Text style={styles.error}>{budgetError}</Text> : null}
 
-            <TouchableOpacity style={[styles.doneBtn, {backgroundColor: '#0080ff', bottom: height * 0.15}, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editDream}>
-                <View style={[styles.doneIcon, {marginRight: 6}]}>
-                    <Icons type={'edit'} />
-                </View>
-                <Text style={styles.doneBtnText}>Edit</Text>
-            </TouchableOpacity>
+                    <View style={{height: 200}} />
+                </ScrollView>
 
-            <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={submitDream}>
-                <View style={styles.doneIcon}>
-                    <Icons type={'done'} />
-                </View>
-                <Text style={styles.doneBtnText}>Done</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={[styles.doneBtn, {backgroundColor: '#0080ff', bottom: height * 0.15}, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editDream}>
+                    <View style={[styles.doneIcon, {marginRight: 6}]}>
+                        <Icons type={'edit'} />
+                    </View>
+                    <Text style={styles.doneBtnText}>Edit</Text>
+                </TouchableOpacity>
 
-        </View>
+                <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={submitDream}>
+                    <View style={styles.doneIcon}>
+                        <Icons type={'done'} />
+                    </View>
+                    <Text style={styles.doneBtnText}>Done</Text>
+                </TouchableOpacity>
+
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -236,7 +238,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

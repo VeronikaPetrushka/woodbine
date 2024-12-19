@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, ScrollView, ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import plants from '../constants/plants';
 import Icons from './Icons';
@@ -19,38 +19,40 @@ const Plants = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-            <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
-                <Icons type={'back'} />
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
+                    <Icons type={'back'} />
+                </TouchableOpacity>
 
-            <Text style={styles.title}>Plants and care</Text>
+                <Text style={styles.title}>Plants and care</Text>
 
-            <ScrollView style={{width: '100%'}}>
-                {
-                    plants.map((plant, index) => (
-                        <View key={index} style={[styles.card, { height: expandedPlant === plant ? 165 : 75 }]}>
-                            <Text style={styles.name}>{plant.name}</Text>
-                            <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}}> 
-                                <Text style={[styles.text, expandedPlant === plant && { marginBottom: 5 }]}>Care tips</Text>
-                                <TouchableOpacity style={styles.moreIcon} onPress={() => handleMore(plant)}>
-                                    <Icons type={'more-info'} />
-                                </TouchableOpacity>
+                <ScrollView style={{width: '100%'}}>
+                    {
+                        plants.map((plant, index) => (
+                            <View key={index} style={[styles.card, { height: expandedPlant === plant ? 165 : 75 }]}>
+                                <Text style={styles.name}>{plant.name}</Text>
+                                <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row'}}> 
+                                    <Text style={[styles.text, expandedPlant === plant && { marginBottom: 5 }]}>Care tips</Text>
+                                    <TouchableOpacity style={styles.moreIcon} onPress={() => handleMore(plant)}>
+                                        <Icons type={'more-info'} />
+                                    </TouchableOpacity>
+                                </View>
+                                {
+                                    expandedPlant === plant && (
+                                        plant.tips.map((tip, index) => (
+                                            <Text key={index} style={styles.tip}>- {tip}</Text>
+                                        ))
+                                    )
+                                }
                             </View>
-                            {
-                                expandedPlant === plant && (
-                                    plant.tips.map((tip, index) => (
-                                        <Text key={index} style={styles.tip}>- {tip}</Text>
-                                    ))
-                                )
-                            }
-                        </View>
-                    ))
-                }
-            </ScrollView>
+                        ))
+                    }
+                </ScrollView>
 
-        </View>
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -62,7 +64,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

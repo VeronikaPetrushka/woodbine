@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ScrollView, ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Icons from './Icons';
 
@@ -9,21 +9,23 @@ const PostDetails = ({ post }) => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-             <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
-                <Icons type={'back'} />
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.back} onPress={() => navigation.goBack('')}>
+                    <Icons type={'back'} />
+                </TouchableOpacity>
 
-            <Text style={styles.title}>Post</Text>
+                <Text style={styles.title}>Post</Text>
 
-            <Image source={{uri: post.imageURI}} style={styles.image} />
+                <Image source={{uri: post.imageURI}} style={styles.image} />
 
-            <ScrollView style={{width: '100%'}}>
-                <Text style={styles.description}>{post.desc}</Text>
-            </ScrollView>
+                <ScrollView style={{width: '100%'}}>
+                    <Text style={styles.description}>{post.desc}</Text>
+                </ScrollView>
 
-        </View>
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert, Linking, Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert, Linking, Modal, ImageBackground } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -206,145 +206,147 @@ const Profile = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-            {
-                profilePressed ? (
-                    <View style={{width: '100%', height: '100%'}}>
+                {
+                    profilePressed ? (
+                        <View style={{width: '100%', height: '100%'}}>
 
-                        <Text style={styles.title}>Edit Profile</Text>
+                            <Text style={styles.title}>Edit Profile</Text>
 
-                        <TouchableOpacity style={styles.imageUploadBtn} onPress={handleImageUpload}>
-                            {imageURI ? (
-                                <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: '100%' }} />
-                            ) : (
-                                <Image source={require('../assets/decor/image.png')} style={{width: 78, height: 78}} />
-                            )}
-                        </TouchableOpacity>
-
-                        <TextInput
-                                value={name}
-                                placeholder='Name'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setName(w)}
-                                style={styles.input}
-                            />
-                            {nameError ? <Text style={styles.error}>{nameError}</Text> : null}
+                            <TouchableOpacity style={styles.imageUploadBtn} onPress={handleImageUpload}>
+                                {imageURI ? (
+                                    <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: '100%' }} />
+                                ) : (
+                                    <Image source={require('../assets/decor/image.png')} style={{width: 78, height: 78}} />
+                                )}
+                            </TouchableOpacity>
 
                             <TextInput
-                                value={surname}
-                                placeholder='Surname'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setSurname(w)}
-                                style={styles.input}
-                            />
-                            {surnameError ? <Text style={styles.error}>{surnameError}</Text> : null}
+                                    value={name}
+                                    placeholder='Name'
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    onChangeText={(w) => setName(w)}
+                                    style={styles.input}
+                                />
+                                {nameError ? <Text style={styles.error}>{nameError}</Text> : null}
 
-                            <TextInput
-                                value={birthDate}
-                                placeholder='Date of birth YYYY.MM.DD'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(w) => setBirthDate(formatDateWithDots(w))}
-                                maxLength={10}
-                                style={styles.input}
-                            />
-                            {birthDateError ? <Text style={styles.error}>{birthDateError}</Text> : null}
+                                <TextInput
+                                    value={surname}
+                                    placeholder='Surname'
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    onChangeText={(w) => setSurname(w)}
+                                    style={styles.input}
+                                />
+                                {surnameError ? <Text style={styles.error}>{surnameError}</Text> : null}
 
-                            <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editProfile}>
-                                <View style={styles.doneIcon}>
-                                    <Icons type={'done'} />
-                                </View>
-                                <Text style={styles.doneBtnText}>Done</Text>
-                            </TouchableOpacity>
+                                <TextInput
+                                    value={birthDate}
+                                    placeholder='Date of birth YYYY.MM.DD'
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    onChangeText={(w) => setBirthDate(formatDateWithDots(w))}
+                                    maxLength={10}
+                                    style={styles.input}
+                                />
+                                {birthDateError ? <Text style={styles.error}>{birthDateError}</Text> : null}
 
-                    </View>
-                ) : (
-                    <View style={{width: '100%', height: '100%'}}>
+                                <TouchableOpacity style={[styles.doneBtn, !isValid && {backgroundColor: '#2b2b2b'}]} onPress={editProfile}>
+                                    <View style={styles.doneIcon}>
+                                        <Icons type={'done'} />
+                                    </View>
+                                    <Text style={styles.doneBtnText}>Done</Text>
+                                </TouchableOpacity>
 
-                        <Text style={styles.title}>Profile</Text>
-
-                        <View style={[styles.imageUploadBtn, {marginBottom: 10}]}>
-                            {imageURI ? (
-                                <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: '100%' }} />
-                            ) : (
-                                <Image source={require('../assets/decor/image.png')} style={{width: 78, height: 78}} />
-                            )}
                         </View>
+                    ) : (
+                        <View style={{width: '100%', height: '100%'}}>
 
-                        <Text style={styles.name}>{name || surname ? `${name} ${surname}` : 'Name Surname'}</Text>
+                            <Text style={styles.title}>Profile</Text>
 
-                        <View style={styles.dateContainer}>
-                            <View style={styles.dateIcon}>
-                                <Icons type={'calendar'} grey />
-                            </View>
-                            <Text style={styles.date}>{birthDate ? `${birthDate}` : 'date of birth'}</Text>
-                        </View>
-
-                        <ScrollView style={{width: '100%'}}>
-                            <View style={styles.btnsContainer}>
-                                <View style={styles.btn}>
-                                    <Text style={styles.btnText}>Edit profile</Text>
-                                    <TouchableOpacity style={styles.btnIcon} onPress={handleProfilePress}>
-                                        <Icons type={'profile-arrow'} />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={styles.btn}>
-                                    <Text style={styles.btnText}>Privacy policy</Text>
-                                    <TouchableOpacity style={styles.btnIcon} onPress={handlePrivacyPolicy}>
-                                        <Icons type={'profile-arrow'} />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={[styles.btn, {borderBottomWidth: 0}]}>
-                                    <Text style={styles.btnText}>Clear data</Text>
-                                    <TouchableOpacity style={styles.btnIcon} onPress={() => setResetModalVisible(true)}>
-                                        <Icons type={'profile-arrow'} />
-                                    </TouchableOpacity>
-                                </View>
+                            <View style={[styles.imageUploadBtn, {marginBottom: 10}]}>
+                                {imageURI ? (
+                                    <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: '100%' }} />
+                                ) : (
+                                    <Image source={require('../assets/decor/image.png')} style={{width: 78, height: 78}} />
+                                )}
                             </View>
 
-                            <Text style={styles.subTitle}>Statistics</Text>
+                            <Text style={styles.name}>{name || surname ? `${name} ${surname}` : 'Name Surname'}</Text>
 
-                            <View style={styles.statisticContainer}>
-                                <View style={styles.statisticBox}>
-                                    <Text style={styles.statisticText}>Total garden desires</Text>
-                                    <Text style={styles.statisticNumber}>{desires}</Text>
+                            <View style={styles.dateContainer}>
+                                <View style={styles.dateIcon}>
+                                    <Icons type={'calendar'} grey />
                                 </View>
-                                <View style={styles.statisticBox}>
-                                    <Text style={styles.statisticText}>The number of virtual gardens created</Text>
-                                    <Text style={styles.statisticNumber}>{projects}</Text>
-                                </View>
+                                <Text style={styles.date}>{birthDate ? `${birthDate}` : 'date of birth'}</Text>
                             </View>
 
-                        </ScrollView>
+                            <ScrollView style={{width: '100%'}}>
+                                <View style={styles.btnsContainer}>
+                                    <View style={styles.btn}>
+                                        <Text style={styles.btnText}>Edit profile</Text>
+                                        <TouchableOpacity style={styles.btnIcon} onPress={handleProfilePress}>
+                                            <Icons type={'profile-arrow'} />
+                                        </TouchableOpacity>
+                                    </View>
 
-                    </View>
-                )
-            }
+                                    <View style={styles.btn}>
+                                        <Text style={styles.btnText}>Privacy policy</Text>
+                                        <TouchableOpacity style={styles.btnIcon} onPress={handlePrivacyPolicy}>
+                                            <Icons type={'profile-arrow'} />
+                                        </TouchableOpacity>
+                                    </View>
 
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={resetModalVisible}
-                onRequestClose={() => setResetModalVisible(false)}>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={[styles.modalText, {color: '#ff0004', fontWeight: '800', marginBottom: 15, fontSize: 20}]}>Reset</Text>
-                        <Text style={styles.modalText}>Are you sure, you want to clear your entire data ? This action cannot be canceled once it will be done and it will delete your account along with garden dreams, projects, desires, and posts !</Text>
-                        <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginTop: 20}}>
-                            <TouchableOpacity style={styles.closeBtn} onPress={() => setResetModalVisible(false)}>
-                                <Text style={styles.closeBtnText}>Close</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.closeBtn, {backgroundColor: '#ff0004'}]} onPress={handleReset}>
-                                <Text style={styles.closeBtnText}>Confirm</Text>
-                            </TouchableOpacity>
+                                    <View style={[styles.btn, {borderBottomWidth: 0}]}>
+                                        <Text style={styles.btnText}>Clear data</Text>
+                                        <TouchableOpacity style={styles.btnIcon} onPress={() => setResetModalVisible(true)}>
+                                            <Icons type={'profile-arrow'} />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+
+                                <Text style={styles.subTitle}>Statistics</Text>
+
+                                <View style={styles.statisticContainer}>
+                                    <View style={styles.statisticBox}>
+                                        <Text style={styles.statisticText}>Total garden desires</Text>
+                                        <Text style={styles.statisticNumber}>{desires}</Text>
+                                    </View>
+                                    <View style={styles.statisticBox}>
+                                        <Text style={styles.statisticText}>The number of virtual gardens created</Text>
+                                        <Text style={styles.statisticNumber}>{projects}</Text>
+                                    </View>
+                                </View>
+
+                            </ScrollView>
+
+                        </View>
+                    )
+                }
+
+                <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={resetModalVisible}
+                    onRequestClose={() => setResetModalVisible(false)}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <Text style={[styles.modalText, {color: '#ff0004', fontWeight: '800', marginBottom: 15, fontSize: 20}]}>Reset</Text>
+                            <Text style={styles.modalText}>Are you sure, you want to clear your entire data ? This action cannot be canceled once it will be done and it will delete your account along with garden dreams, projects, desires, and posts !</Text>
+                            <View style={{width: '100%', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginTop: 20}}>
+                                <TouchableOpacity style={styles.closeBtn} onPress={() => setResetModalVisible(false)}>
+                                    <Text style={styles.closeBtnText}>Close</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.closeBtn, {backgroundColor: '#ff0004'}]} onPress={handleReset}>
+                                    <Text style={styles.closeBtnText}>Confirm</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Modal>
+                </Modal>
 
-        </View>
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -357,7 +359,6 @@ const styles = StyleSheet.create({
         paddingBottom: height * 0.15,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

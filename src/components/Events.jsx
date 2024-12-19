@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ScrollView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ScrollView, ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import events from '../constants/events';
 import Icons from './Icons';
@@ -10,33 +10,35 @@ const Events = () => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-            <Text style={styles.title}>Events</Text>
+                <Text style={styles.title}>Events</Text>
 
-            <ScrollView style={{width: '100%'}}>
-                {
-                    events.map((event, index) => (
-                        <TouchableOpacity 
-                            key={index} 
-                            style={styles.card} 
-                            onPress={() => navigation.navigate('EventDetailsScreen', {event: event})}
-                        >
-                            <Image source={event.image} style={styles.image} />
-                            <Text style={styles.name}>{event.name}</Text>
-                            <View style={styles.locationContainer}>
-                                <View style={styles.locationIcon}>
-                                    <Icons type={'location'} />
+                <ScrollView style={{width: '100%'}}>
+                    {
+                        events.map((event, index) => (
+                            <TouchableOpacity 
+                                key={index} 
+                                style={styles.card} 
+                                onPress={() => navigation.navigate('EventDetailsScreen', {event: event})}
+                            >
+                                <Image source={event.image} style={styles.image} />
+                                <Text style={styles.name}>{event.name}</Text>
+                                <View style={styles.locationContainer}>
+                                    <View style={styles.locationIcon}>
+                                        <Icons type={'location'} />
+                                    </View>
+                                    <Text style={styles.locationText}>{event.location}</Text>
                                 </View>
-                                <Text style={styles.locationText}>{event.location}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))
-                }
-                <View style={{height: 100}} />
-            </ScrollView>
+                            </TouchableOpacity>
+                        ))
+                    }
+                    <View style={{height: 100}} />
+                </ScrollView>
 
-        </View>
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -48,7 +50,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

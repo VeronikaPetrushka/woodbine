@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Icons from './Icons';
 
@@ -9,55 +9,57 @@ const Home = () => {
     const navigation = useNavigation(); 
 
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-            <Text style={styles.title}>Home</Text>
+                <Text style={styles.title}>Home</Text>
 
-            <View style={styles.btnsContainer}>
+                <View style={styles.btnsContainer}>
 
-                <View style={styles.btn}>
-                    <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
-                        <Image style={styles.image} source={require('../assets/home/1.png')} />
-                        <Text style={styles.btnText}>Garden Dreams</Text>
+                    <View style={styles.btn}>
+                        <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
+                            <Image style={styles.image} source={require('../assets/home/1.png')} />
+                            <Text style={styles.btnText}>Garden Dreams</Text>
+                        </View>
+                        <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('DreamsScreen')}>
+                            <Icons type={'arrow'} />
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('DreamsScreen')}>
-                        <Icons type={'arrow'} />
-                    </TouchableOpacity>
+
+                    <View style={styles.btn}>
+                        <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
+                            <Image style={styles.image} source={require('../assets/home/2.png')} />
+                            <Text style={styles.btnText}>Gardening Projects</Text>
+                        </View>
+                        <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('ProjectsScreen')}>
+                            <Icons type={'arrow'} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.btn}>
+                        <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
+                            <Image style={styles.image} source={require('../assets/home/3.png')} />
+                            <Text style={styles.btnText}>Plants and care</Text>
+                        </View>
+                        <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('PlantsScreen')}>
+                            <Icons type={'arrow'} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.btn}>
+                        <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
+                            <Image style={styles.image} source={require('../assets/home/4.png')} />
+                            <Text style={styles.btnText}>Green Desires</Text>
+                        </View>
+                        <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('DesiresScreen')}>
+                            <Icons type={'arrow'} />
+                        </TouchableOpacity>
+                    </View>
+                    
                 </View>
 
-                <View style={styles.btn}>
-                    <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
-                        <Image style={styles.image} source={require('../assets/home/2.png')} />
-                        <Text style={styles.btnText}>Gardening Projects</Text>
-                    </View>
-                    <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('ProjectsScreen')}>
-                        <Icons type={'arrow'} />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.btn}>
-                    <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
-                        <Image style={styles.image} source={require('../assets/home/3.png')} />
-                        <Text style={styles.btnText}>Plants and care</Text>
-                    </View>
-                    <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('PlantsScreen')}>
-                        <Icons type={'arrow'} />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.btn}>
-                    <View style={{alignItems: 'flex-start', justifyContent: 'center'}}>
-                        <Image style={styles.image} source={require('../assets/home/4.png')} />
-                        <Text style={styles.btnText}>Green Desires</Text>
-                    </View>
-                    <TouchableOpacity style={styles.arrowIcon} onPress={() => navigation.navigate('DesiresScreen')}>
-                        <Icons type={'arrow'} />
-                    </TouchableOpacity>
-                </View>
-                
             </View>
-
-        </View>
+        </ImageBackground>
     )
 };
 
@@ -69,7 +71,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {

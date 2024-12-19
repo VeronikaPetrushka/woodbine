@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, TextInput, ScrollView, Alert, ImageBackground } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -101,78 +101,74 @@ const Community = () => {
         }
     };
 
-    const handleDeletePost = async (id) => {
-        const updatedPosts = posts.filter((post) => post.id !== id);
-        setPosts(updatedPosts);
-        await AsyncStorage.setItem('posts', JSON.stringify(updatedPosts));
-    };  
-
     return (
-        <View style={styles.container}>
+        <ImageBackground source={require('../assets/back/back.png')} style={{flex:1}}>
+            <View style={styles.container}>
 
-            {
-                addPressed ? (
-                    <View style={{width: '100%', height: '100%'}}>
-                        <Text style={styles.title}>Add post</Text>
+                {
+                    addPressed ? (
+                        <View style={{width: '100%', height: '100%'}}>
+                            <Text style={styles.title}>Add post</Text>
 
-                        <ScrollView style={{width: '100%'}}>
-                            <TouchableOpacity style={styles.imageUploadBtn} onPress={handleImageUpload}>
-                                {imageURI ? (
-                                    <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 12 }} />
-                                ) : (
-                                    <Image source={require('../assets/decor/image.png')} style={{width: 124, height: 124}} />
-                                )}
-                            </TouchableOpacity>
-                            {imageError ? <Text style={styles.error}>{imageError}</Text> : null}
+                            <ScrollView style={{width: '100%'}}>
+                                <TouchableOpacity style={styles.imageUploadBtn} onPress={handleImageUpload}>
+                                    {imageURI ? (
+                                        <Image source={{ uri: imageURI }} style={{ width: '100%', height: '100%', resizeMode: 'cover', borderRadius: 12 }} />
+                                    ) : (
+                                        <Image source={require('../assets/decor/image.png')} style={{width: 124, height: 124}} />
+                                    )}
+                                </TouchableOpacity>
+                                {imageError ? <Text style={styles.error}>{imageError}</Text> : null}
 
-                            <TextInput
-                                value={desc}
-                                placeholder='Write here...'
-                                placeholderTextColor="rgba(255, 255, 255, 0.5)"
-                                onChangeText={(d) => setDesc(d)}
-                                multiline={true}
-                                style={[styles.input, {height: 140}]}
-                            />
-                            {descError ? <Text style={styles.error}>{descError}</Text> : null}
-                        </ScrollView>
+                                <TextInput
+                                    value={desc}
+                                    placeholder='Write here...'
+                                    placeholderTextColor="rgba(255, 255, 255, 0.5)"
+                                    onChangeText={(d) => setDesc(d)}
+                                    multiline={true}
+                                    style={[styles.input, {height: 140}]}
+                                />
+                                {descError ? <Text style={styles.error}>{descError}</Text> : null}
+                            </ScrollView>
 
+                        </View>
+                    ) : (
+                        <View style={{width: '100%', height: '100%'}}>
+                            <Text style={styles.title}>Community</Text>
+
+                            <ScrollView style={{width: '100%'}}>
+                                {
+                                    posts?.map((post, index) => (
+                                        <TouchableOpacity key={index} style={styles.post} onPress={() => navigation.navigate('PostDetailsScreen', {post: post})}>
+                                            <Image source={{uri: post.imageURI}} style={styles.postImage} />
+                                            <Text style={styles.postDesc} numberOfLines={3} ellipsizeMode="tail">{post.desc}</Text>
+                                        </TouchableOpacity>
+                                    ))
+                                }
+                            </ScrollView>
+
+                            <View style={{height: 170}} />
+
+                        </View>
+                    )
+                }
+
+                <TouchableOpacity style={styles.addBtn} onPress={() => {
+                        if (addPressed) {
+                            submitPost();
+                        } else {
+                            setAddPressed(true);
+                        }
+                    }}
+                    >
+                    <View style={styles.addIcon}>
+                        <Icons type={'add'} />
                     </View>
-                ) : (
-                    <View style={{width: '100%', height: '100%'}}>
-                        <Text style={styles.title}>Community</Text>
+                    <Text style={styles.addBtnText}>Add</Text>
+                </TouchableOpacity>
 
-                        <ScrollView style={{width: '100%'}}>
-                            {
-                                posts?.map((post, index) => (
-                                    <TouchableOpacity key={index} style={styles.post} onPress={() => navigation.navigate('PostDetailsScreen', {post: post})}>
-                                        <Image source={{uri: post.imageURI}} style={styles.postImage} />
-                                        <Text style={styles.postDesc} numberOfLines={3} ellipsizeMode="tail">{post.desc}</Text>
-                                    </TouchableOpacity>
-                                ))
-                            }
-                        </ScrollView>
-
-                        <View style={{height: 170}} />
-
-                    </View>
-                )
-            }
-
-            <TouchableOpacity style={styles.addBtn} onPress={() => {
-                    if (addPressed) {
-                        submitPost();
-                    } else {
-                        setAddPressed(true);
-                    }
-                }}
-                >
-                <View style={styles.addIcon}>
-                    <Icons type={'add'} />
-                </View>
-                <Text style={styles.addBtnText}>Add</Text>
-            </TouchableOpacity>
-
-        </View>
+            </View>
+        </ImageBackground>
     )
 };
 
@@ -184,7 +180,6 @@ const styles = StyleSheet.create({
         paddingTop: height * 0.07,
         alignItems: 'center',
         justifyContent: 'flex-start',
-        backgroundColor: '#000'
     },
 
     title: {
